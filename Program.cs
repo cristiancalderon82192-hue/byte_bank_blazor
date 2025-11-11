@@ -15,7 +15,10 @@ builder.Services.AddScoped(sp => new HttpClient
 
 // Registrar servicios
 builder.Services.AddScoped<CuentaService>();
+builder.Services.AddScoped<CuentahabienteService>();
 builder.Services.AddScoped<MovimientoService>();
+builder.Services.AddScoped<PrestamoService>();
+builder.Services.AddScoped<CatalogoService>();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

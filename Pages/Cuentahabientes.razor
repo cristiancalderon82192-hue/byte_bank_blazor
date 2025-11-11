@@ -1,0 +1,238 @@
+@page "/cuentahabientes"
+@using ByteBank.Models
+@using ByteBank.Services
+@inject CuentahabienteService CuentahabienteService
+@inject CatalogoService CatalogoService
+
+<PageTitle>Cuentahabientes</PageTitle>
+
+<h1>Cuentahabientes</h1>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <button class="btn btn-primary" @onclick="MostrarFormularioCrear">
+            <span class="bi bi-plus-circle"></span> Nuevo Cuentahabiente
+        </button>
+    </div>
+    <div class="col-md-6">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Buscar por documento..." @bind="busqueda" />
+            <button class="btn btn-outline-secondary" @onclick="BuscarPorDocumento">
+                <span class="bi bi-search"></span> Buscar
+            </button>
+        </div>
+    </div>
+</div>
+
+@if (mostrarFormulario)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Nuevo Cuentahabiente</h5>
+        </div>
+        <div class="card-body">
+            <EditForm Model="@nuevoCuentahabiente" OnValidSubmit="CrearCuentahabiente">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Nombre:</label>
+                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Nombre" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Tipo Documento:</label>
+                        <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdTipoDocumento">
+                            <option value="0">Seleccionar...</option>
+                            @if (tiposDocumento != null)
+                            {
+                                @foreach (var tipo in tiposDocumento)
+                                {
+                                    <option value="@tipo.IdTipoDocumento">@tipo.Nombre</option>
+                                }
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Documento:</label>
+                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Documento" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Dirección:</label>
+                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Direccion" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Teléfono:</label>
+                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Telefono" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Ciudad:</label>
+                        <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdCiudad">
+                            <option value="0">Seleccionar...</option>
+                            @if (ciudades != null)
+                            {
+                                @foreach (var ciudad in ciudades)
+                                {
+                                    <option value="@ciudad.IdCiudad">@ciudad.Nombre</option>
+                                }
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Clave:</label>
+                        <InputText type="password" class="form-control" @bind-Value="nuevoCuentahabiente.Clave" />
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (cuentahabientes == null)
+{
+    <p><em>Cargando cuentahabientes...</em></p>
+}
+else if (!cuentahabientes.Any())
+{
+    <div class="alert alert-info">
+        <strong>No hay cuentahabientes registrados.</strong>
+    </div>
+}
+else
+{
+    <div class="mb-3">
+        <strong>Total de cuentahabientes:</strong> @cuentahabientes.Count
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Documento</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cuentahabiente in cuentahabientes)
+            {
+                <tr>
+                    <td>@cuentahabiente.IdCuentahabiente</td>
+                    <td><strong>@cuentahabiente.Nombre</strong></td>
+                    <td>@cuentahabiente.Documento</td>
+                    <td>@cuentahabiente.Telefono</td>
+                    <td>@cuentahabiente.Direccion</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" @onclick="() => EliminarCuentahabiente(cuentahabiente.IdCuentahabiente)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (mensaje != null)
+{
+    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+        @mensaje
+        <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
+    </div>
+}
+
+@code {
+    private List<Cuentahabiente>? cuentahabientes;
+    private List<Ciudad>? ciudades;
+    private List<TipoDocumento>? tiposDocumento;
+    private CuentahabienteCreate nuevoCuentahabiente = new();
+    private bool mostrarFormulario = false;
+    private string? mensaje;
+    private bool esError;
+    private string busqueda = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarDatos();
+    }
+
+    private async Task CargarDatos()
+    {
+        cuentahabientes = await CuentahabienteService.GetCuentahabientesAsync();
+        ciudades = await CatalogoService.GetCiudadesAsync();
+        tiposDocumento = await CatalogoService.GetTiposDocumentoAsync();
+    }
+
+    private void MostrarFormularioCrear()
+    {
+        mostrarFormulario = true;
+        nuevoCuentahabiente = new();
+    }
+
+    private void CancelarFormulario()
+    {
+        mostrarFormulario = false;
+        nuevoCuentahabiente = new();
+    }
+
+    private async Task CrearCuentahabiente()
+    {
+        var resultado = await CuentahabienteService.CreateCuentahabienteAsync(nuevoCuentahabiente);
+        if (resultado != null)
+        {
+            mensaje = "Cuentahabiente creado exitosamente";
+            esError = false;
+            mostrarFormulario = false;
+            await CargarDatos();
+        }
+        else
+        {
+            mensaje = "Error al crear el cuentahabiente";
+            esError = true;
+        }
+    }
+
+    private async Task BuscarPorDocumento()
+    {
+        if (!string.IsNullOrWhiteSpace(busqueda))
+        {
+            var resultado = await CuentahabienteService.GetCuentahabienteByDocumentoAsync(busqueda);
+            if (resultado != null)
+            {
+                cuentahabientes = new List<Cuentahabiente> { resultado };
+            }
+            else
+            {
+                mensaje = $"No se encontró cuentahabiente con documento {busqueda}";
+                esError = true;
+            }
+        }
+        else
+        {
+            await CargarDatos();
+        }
+    }
+
+    private async Task EliminarCuentahabiente(int id)
+    {
+        var exito = await CuentahabienteService.DeleteCuentahabienteAsync(id);
+        if (exito)
+        {
+            mensaje = "Cuentahabiente eliminado exitosamente";
+            esError = false;
+            await CargarDatos();
+        }
+        else
+        {
+            mensaje = "Error al eliminar el cuentahabiente";
+            esError = true;
+        }
+    }
+}

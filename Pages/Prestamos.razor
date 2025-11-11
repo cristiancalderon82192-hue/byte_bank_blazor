@@ -1,0 +1,257 @@
+@page "/prestamos"
+@using ByteBank.Models
+@using ByteBank.Services
+@inject PrestamoService PrestamoService
+
+<PageTitle>Préstamos</PageTitle>
+
+<h1>Gestión de Préstamos</h1>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <button class="btn btn-primary" @onclick="MostrarFormularioCrear">
+            <span class="bi bi-plus-circle"></span> Nuevo Préstamo
+        </button>
+        <button class="btn btn-info ms-2" @onclick="MostrarCalculadora">
+            <span class="bi bi-calculator"></span> Calcular Cuota
+        </button>
+    </div>
+</div>
+
+@if (mostrarCalculadora)
+{
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">
+            <h5>Calculadora de Cuotas</h5>
+        </div>
+        <div class="card-body">
+            <EditForm Model="@calculo" OnValidSubmit="CalcularCuota">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label>Valor del Préstamo:</label>
+                        <InputNumber class="form-control" @bind-Value="calculo.Valor" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Tasa de Interés (%):</label>
+                        <InputNumber class="form-control" @bind-Value="calculo.Interes" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Plazo (meses):</label>
+                        <InputNumber class="form-control" @bind-Value="calculo.Plazo" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Seguro (opcional):</label>
+                        <InputNumber class="form-control" @bind-Value="calculo.Seguro" />
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-info">Calcular</button>
+                <button type="button" class="btn btn-secondary ms-2" @onclick="() => mostrarCalculadora = false">Cerrar</button>
+            </EditForm>
+
+            @if (resultadoCalculo != null)
+            {
+                <div class="alert alert-success mt-3">
+                    <h6>Resultado del Cálculo:</h6>
+                    <ul class="mb-0">
+                        <li><strong>Cuota Mensual:</strong> $@resultadoCalculo.CuotaMensual.ToString("N2")</li>
+                        <li><strong>Total a Pagar:</strong> $@resultadoCalculo.TotalAPagar.ToString("N2")</li>
+                        <li><strong>Total Intereses:</strong> $@resultadoCalculo.TotalIntereses.ToString("N2")</li>
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@if (mostrarFormulario)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Nuevo Préstamo</h5>
+        </div>
+        <div class="card-body">
+            <EditForm Model="@nuevoPrestamo" OnValidSubmit="CrearPrestamo">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label>Número de Préstamo:</label>
+                        <InputText class="form-control" @bind-Value="nuevoPrestamo.Numero" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>ID Cuenta:</label>
+                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.IdCuenta" />
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label>Fecha:</label>
+                        <InputDate class="form-control" @bind-Value="nuevoPrestamo.Fecha" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label>Valor:</label>
+                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Valor" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Interés (%):</label>
+                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Interes" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Plazo (meses):</label>
+                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Plazo" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Seguro:</label>
+                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Seguro" />
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (prestamos == null)
+{
+    <p><em>Cargando préstamos...</em></p>
+}
+else if (!prestamos.Any())
+{
+    <div class="alert alert-info">
+        <strong>No hay préstamos registrados.</strong>
+    </div>
+}
+else
+{
+    <div class="mb-3">
+        <strong>Total de préstamos:</strong> @prestamos.Count
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Número</th>
+                <th>ID Cuenta</th>
+                <th>Fecha</th>
+                <th>Valor</th>
+                <th>Interés</th>
+                <th>Plazo</th>
+                <th>Cuota</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prestamo in prestamos)
+            {
+                <tr>
+                    <td>@prestamo.IdPrestamo</td>
+                    <td><strong>@prestamo.Numero</strong></td>
+                    <td>@prestamo.IdCuenta</td>
+                    <td>@prestamo.Fecha.ToShortDateString()</td>
+                    <td class="text-primary">$@prestamo.Valor.ToString("N2")</td>
+                    <td>@prestamo.Interes%</td>
+                    <td>@prestamo.Plazo meses</td>
+                    <td class="text-success"><strong>$@prestamo.Cuota.ToString("N2")</strong></td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" @onclick="() => EliminarPrestamo(prestamo.IdPrestamo)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (mensaje != null)
+{
+    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+        @mensaje
+        <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
+    </div>
+}
+
+@code {
+    private List<Prestamo>? prestamos;
+    private PrestamoCreate nuevoPrestamo = new() { Fecha = DateTime.Now };
+    private CalculoCuota calculo = new();
+    private CalculoCuotaResponse? resultadoCalculo;
+    private bool mostrarFormulario = false;
+    private bool mostrarCalculadora = false;
+    private string? mensaje;
+    private bool esError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarPrestamos();
+    }
+
+    private async Task CargarPrestamos()
+    {
+        prestamos = await PrestamoService.GetPrestamosAsync();
+    }
+
+    private void MostrarFormularioCrear()
+    {
+        mostrarFormulario = true;
+        nuevoPrestamo = new() { Fecha = DateTime.Now };
+    }
+
+    private void MostrarCalculadora()
+    {
+        mostrarCalculadora = true;
+        calculo = new();
+        resultadoCalculo = null;
+    }
+
+    private void CancelarFormulario()
+    {
+        mostrarFormulario = false;
+        nuevoPrestamo = new() { Fecha = DateTime.Now };
+    }
+
+    private async Task CalcularCuota()
+    {
+        resultadoCalculo = await PrestamoService.CalcularCuotaAsync(calculo);
+        if (resultadoCalculo == null)
+        {
+            mensaje = "Error al calcular la cuota";
+            esError = true;
+        }
+    }
+
+    private async Task CrearPrestamo()
+    {
+        var resultado = await PrestamoService.CreatePrestamoAsync(nuevoPrestamo);
+        if (resultado != null)
+        {
+            mensaje = "Préstamo creado exitosamente";
+            esError = false;
+            mostrarFormulario = false;
+            await CargarPrestamos();
+        }
+        else
+        {
+            mensaje = "Error al crear el préstamo";
+            esError = true;
+        }
+    }
+
+    private async Task EliminarPrestamo(int id)
+    {
+        var exito = await PrestamoService.DeletePrestamoAsync(id);
+        if (exito)
+        {
+            mensaje = "Préstamo eliminado exitosamente";
+            esError = false;
+            await CargarPrestamos();
+        }
+        else
+        {
+            mensaje = "Error al eliminar el préstamo";
+            esError = true;
+        }
+    }
+}
