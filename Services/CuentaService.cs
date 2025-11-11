@@ -6,7 +6,7 @@ namespace ByteBank.Services
     public class CuentaService
     {
         private readonly HttpClient _httpClient;
-        private const string ApiBaseUrl = "http://localhost:8000/api/cuentas";
+        private const string ApiBasePath = "/api/cuentas";
 
         public CuentaService(HttpClient httpClient)
         {
@@ -18,7 +18,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Cuenta>>(ApiBaseUrl);
+                return await _httpClient.GetFromJsonAsync<List<Cuenta>>($"{ApiBasePath}/");
             }
             catch (Exception ex)
             {
@@ -32,7 +32,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<Cuenta>($"{ApiBaseUrl}/{id}");
+                return await _httpClient.GetFromJsonAsync<Cuenta>($"{ApiBasePath}/{id}");
             }
             catch (Exception ex)
             {
@@ -46,7 +46,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<Cuenta>($"{ApiBaseUrl}/numero/{numero}");
+                return await _httpClient.GetFromJsonAsync<Cuenta>($"{ApiBasePath}/numero/{numero}");
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<SaldoResponse>($"{ApiBaseUrl}/{idCuenta}/saldo");
+                return await _httpClient.GetFromJsonAsync<SaldoResponse>($"{ApiBasePath}/{idCuenta}/saldo");
             }
             catch (Exception ex)
             {
@@ -74,7 +74,7 @@ namespace ByteBank.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync(ApiBaseUrl, cuenta);
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/", cuenta);
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadFromJsonAsync<Cuenta>();
             }
@@ -85,12 +85,31 @@ namespace ByteBank.Services
             }
         }
 
+        // Nota: Los titulares se obtienen desde TitularService.GetTitularesByCuentaAsync()
+        // Nota: Los movimientos se obtienen desde MovimientoService.GetMovimientosByCuentaAsync()
+
+        // Actualizar cuenta
+        public async Task<Cuenta?> UpdateCuentaAsync(int id, CuentaCreate cuenta)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/{id}", cuenta);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<Cuenta>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al actualizar cuenta: {ex.Message}");
+                return null;
+            }
+        }
+
         // Eliminar cuenta
         public async Task<bool> DeleteCuentaAsync(int id)
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"{ApiBaseUrl}/{id}");
+                var response = await _httpClient.DeleteAsync($"{ApiBasePath}/{id}");
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)

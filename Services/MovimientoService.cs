@@ -6,11 +6,39 @@ namespace ByteBank.Services
     public class MovimientoService
     {
         private readonly HttpClient _httpClient;
-        private const string ApiBaseUrl = "http://localhost:8000/api/movimientos";
+        private const string ApiBasePath = "/api/movimientos";
 
         public MovimientoService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        // Obtener todos los movimientos
+        public async Task<List<Movimiento>?> GetMovimientosAsync()
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<Movimiento>>($"{ApiBasePath}/");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener movimientos: {ex.Message}");
+                return null;
+            }
+        }
+
+        // Obtener movimiento por ID
+        public async Task<Movimiento?> GetMovimientoAsync(int id)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<Movimiento>($"{ApiBasePath}/{id}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener movimiento {id}: {ex.Message}");
+                return null;
+            }
         }
 
         // Obtener movimientos por cuenta
@@ -18,11 +46,27 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Movimiento>>($"{ApiBaseUrl}/cuenta/{idCuenta}");
+                return await _httpClient.GetFromJsonAsync<List<Movimiento>>($"{ApiBasePath}/cuenta/{idCuenta}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al obtener movimientos: {ex.Message}");
+                return null;
+            }
+        }
+
+        // Obtener movimientos por rango de fechas
+        public async Task<List<Movimiento>?> GetMovimientosByFechaAsync(DateTime fechaInicio, DateTime fechaFin)
+        {
+            try
+            {
+                var fechaInicioStr = fechaInicio.ToString("yyyy-MM-dd");
+                var fechaFinStr = fechaFin.ToString("yyyy-MM-dd");
+                return await _httpClient.GetFromJsonAsync<List<Movimiento>>($"{ApiBasePath}/fecha/{fechaInicioStr}/{fechaFinStr}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener movimientos por fecha: {ex.Message}");
                 return null;
             }
         }
@@ -32,7 +76,7 @@ namespace ByteBank.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"{ApiBaseUrl}/deposito", deposito);
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/deposito", deposito);
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadFromJsonAsync<Movimiento>();
             }
@@ -48,7 +92,7 @@ namespace ByteBank.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"{ApiBaseUrl}/retiro", retiro);
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/retiro", retiro);
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadFromJsonAsync<Movimiento>();
             }
@@ -64,7 +108,7 @@ namespace ByteBank.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"{ApiBaseUrl}/transferencia", transferencia);
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/transferencia", transferencia);
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadFromJsonAsync<object>();
             }

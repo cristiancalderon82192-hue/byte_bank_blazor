@@ -19,7 +19,7 @@ builder.Services.AddScoped<CuentahabienteService>();
 builder.Services.AddScoped<MovimientoService>();
 builder.Services.AddScoped<PrestamoService>();
 builder.Services.AddScoped<CatalogoService>();
-
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddScoped<SucursalService>();
+builder.Services.AddScoped<TitularService>();
 
 await builder.Build().RunAsync();

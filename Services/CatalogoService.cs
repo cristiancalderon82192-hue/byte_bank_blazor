@@ -6,7 +6,7 @@ namespace ByteBank.Services
     public class CatalogoService
     {
         private readonly HttpClient _httpClient;
-        private const string ApiBaseUrl = "http://localhost:8000/api";
+        private const string ApiBasePath = "/api";
 
         public CatalogoService(HttpClient httpClient)
         {
@@ -18,7 +18,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Ciudad>>($"{ApiBaseUrl}/ciudades");
+                return await _httpClient.GetFromJsonAsync<List<Ciudad>>($"{ApiBasePath}/ciudades/");
             }
             catch (Exception ex)
             {
@@ -32,7 +32,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<TipoCuenta>>($"{ApiBaseUrl}/tipos/cuenta");
+                return await _httpClient.GetFromJsonAsync<List<TipoCuenta>>($"{ApiBasePath}/tipos/cuenta");
             }
             catch (Exception ex)
             {
@@ -46,7 +46,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<TipoDocumento>>($"{ApiBaseUrl}/tipos/documento");
+                return await _httpClient.GetFromJsonAsync<List<TipoDocumento>>($"{ApiBasePath}/tipos/documento");
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<TipoMovimiento>>($"{ApiBaseUrl}/tipos/movimiento");
+                return await _httpClient.GetFromJsonAsync<List<TipoMovimiento>>($"{ApiBasePath}/tipos/movimiento");
             }
             catch (Exception ex)
             {
@@ -74,7 +74,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<TipoSucursal>>($"{ApiBaseUrl}/tipos/sucursal");
+                return await _httpClient.GetFromJsonAsync<List<TipoSucursal>>($"{ApiBasePath}/tipos/sucursal");
             }
             catch (Exception ex)
             {
@@ -88,7 +88,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Sucursal>>($"{ApiBaseUrl}/sucursales");
+                return await _httpClient.GetFromJsonAsync<List<Sucursal>>($"{ApiBasePath}/sucursales/");
             }
             catch (Exception ex)
             {

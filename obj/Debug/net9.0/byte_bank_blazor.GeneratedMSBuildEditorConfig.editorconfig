@@ -28,6 +28,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Catalogos.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0YWxvZ29zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -40,8 +44,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VlbnRhcy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
+[D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Movimientos.razor]
@@ -50,6 +54,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Prestamos.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJlc3RhbW9zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Sucursales.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3VjdXJzYWxlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Titulares.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVGl0dWxhcmVzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Weather.razor]

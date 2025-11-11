@@ -1,0 +1,169 @@
+@page "/"
+
+<PageTitle>ByteBank - Sistema Bancario</PageTitle>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="jumbotron bg-light p-5 rounded">
+                <h1 class="display-4">ByteBank</h1>
+                <p class="lead">Sistema de Gestión Bancaria</p>
+                <hr class="my-4">
+                <p>Plataforma integral para la administración de operaciones bancarias, cuentas, clientes y transacciones financieras.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-3">Módulos del Sistema</h3>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Cuentahabientes -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="bi bi-people fs-2 text-primary me-3"></span>
+                        <h5 class="card-title mb-0">Cuentahabientes</h5>
+                    </div>
+                    <p class="card-text">Gestión completa de clientes bancarios, incluyendo datos personales, documentos y direcciones.</p>
+                    <a href="/cuentahabientes" class="btn btn-primary">Acceder</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cuentas -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="bi bi-credit-card fs-2 text-success me-3"></span>
+                        <h5 class="card-title mb-0">Cuentas</h5>
+                    </div>
+                    <p class="card-text">Administración de cuentas bancarias, saldos, sobregiros y consultas de estado financiero.</p>
+                    <a href="/cuentas" class="btn btn-success">Acceder</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movimientos -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="bi bi-currency-dollar fs-2 text-info me-3"></span>
+                        <h5 class="card-title mb-0">Movimientos</h5>
+                    </div>
+                    <p class="card-text">Registro de transacciones: depósitos, retiros y transferencias entre cuentas bancarias.</p>
+                    <a href="/movimientos" class="btn btn-info text-white">Acceder</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Préstamos -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="bi bi-bank fs-2 text-warning me-3"></span>
+                        <h5 class="card-title mb-0">Préstamos</h5>
+                    </div>
+                    <p class="card-text">Gestión de préstamos bancarios con cálculo automático de cuotas e intereses.</p>
+                    <a href="/prestamos" class="btn btn-warning">Acceder</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sucursales -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="bi bi-building fs-2 text-secondary me-3"></span>
+                        <h5 class="card-title mb-0">Sucursales</h5>
+                    </div>
+                    <p class="card-text">Administración de sucursales bancarias, ubicaciones, horarios y datos de contacto.</p>
+                    <a href="/sucursales" class="btn btn-secondary">Acceder</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Titulares -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="bi bi-person-badge fs-2 text-danger me-3"></span>
+                        <h5 class="card-title mb-0">Titulares</h5>
+                    </div>
+                    <p class="card-text">Gestión de relaciones entre cuentas y titulares. Asociación y consulta de propietarios.</p>
+                    <a href="/titulares" class="btn btn-danger">Acceder</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Catálogos -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="bi bi-list-ul fs-2 text-dark me-3"></span>
+                        <h5 class="card-title mb-0">Catálogos</h5>
+                    </div>
+                    <p class="card-text">Consulta de datos maestros del sistema: ciudades, tipos de cuenta, documentos y más.</p>
+                    <a href="/catalogos" class="btn btn-dark">Acceder</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">Información del Sistema</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Tecnologías Utilizadas</h6>
+                            <ul>
+                                <li>Frontend: Blazor WebAssembly (.NET 8)</li>
+                                <li>Backend: FastAPI (Python)</li>
+                                <li>Base de Datos: MySQL</li>
+                                <li>Estilos: Bootstrap 5</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Características</h6>
+                            <ul>
+                                <li>Interfaz moderna y responsiva</li>
+                                <li>Operaciones en tiempo real</li>
+                                <li>Validación de datos automática</li>
+                                <li>API REST documentada</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .jumbotron {
+        border: 1px solid #dee2e6;
+    }
+    .card {
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+</style>
+
+@code {
+
+}

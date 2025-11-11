@@ -6,7 +6,7 @@ namespace ByteBank.Services
     public class CuentahabienteService
     {
         private readonly HttpClient _httpClient;
-        private const string ApiBaseUrl = "http://localhost:8000/api/cuentahabientes";
+        private const string ApiBasePath = "/api/cuentahabientes";
 
         public CuentahabienteService(HttpClient httpClient)
         {
@@ -17,7 +17,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Cuentahabiente>>(ApiBaseUrl);
+                return await _httpClient.GetFromJsonAsync<List<Cuentahabiente>>($"{ApiBasePath}/");
             }
             catch (Exception ex)
             {
@@ -30,7 +30,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<Cuentahabiente>($"{ApiBaseUrl}/{id}");
+                return await _httpClient.GetFromJsonAsync<Cuentahabiente>($"{ApiBasePath}/{id}");
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<Cuentahabiente>($"{ApiBaseUrl}/documento/{documento}");
+                return await _httpClient.GetFromJsonAsync<Cuentahabiente>($"{ApiBasePath}/documento/{documento}");
             }
             catch (Exception ex)
             {
@@ -56,7 +56,7 @@ namespace ByteBank.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync(ApiBaseUrl, cuentahabiente);
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/", cuentahabiente);
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadFromJsonAsync<Cuentahabiente>();
             }
@@ -67,11 +67,28 @@ namespace ByteBank.Services
             }
         }
 
+        public async Task<Cuentahabiente?> UpdateCuentahabienteAsync(int id, CuentahabienteCreate cuentahabiente)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/{id}", cuentahabiente);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<Cuentahabiente>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al actualizar cuentahabiente: {ex.Message}");
+                return null;
+            }
+        }
+
+        // Nota: Las cuentas del cliente se obtienen desde TitularService.GetCuentasByCuentahabienteAsync()
+
         public async Task<bool> DeleteCuentahabienteAsync(int id)
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"{ApiBaseUrl}/{id}");
+                var response = await _httpClient.DeleteAsync($"{ApiBasePath}/{id}");
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)

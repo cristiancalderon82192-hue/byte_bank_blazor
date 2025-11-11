@@ -1,0 +1,232 @@
+@page "/catalogos"
+@using ByteBank.Models
+@using ByteBank.Services
+@inject CatalogoService CatalogoService
+
+<PageTitle>Catálogos del Sistema</PageTitle>
+
+<h1>Catálogos del Sistema</h1>
+<p class="text-muted">Gestión de datos maestros y configuración</p>
+
+<div class="row">
+    <!-- Ciudades -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Ciudades</h5>
+            </div>
+            <div class="card-body">
+                @if (ciudades == null)
+                {
+                    <p><em>Cargando...</em></p>
+                }
+                else if (!ciudades.Any())
+                {
+                    <p class="text-muted">No hay ciudades registradas.</p>
+                }
+                else
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ciudad in ciudades)
+                            {
+                                <tr>
+                                    <td>@ciudad.IdCiudad</td>
+                                    <td>@ciudad.Nombre</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Tipos de Cuenta -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Tipos de Cuenta</h5>
+            </div>
+            <div class="card-body">
+                @if (tiposCuenta == null)
+                {
+                    <p><em>Cargando...</em></p>
+                }
+                else if (!tiposCuenta.Any())
+                {
+                    <p class="text-muted">No hay tipos de cuenta registrados.</p>
+                }
+                else
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                                <th>Sobregiro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tipo in tiposCuenta)
+                            {
+                                <tr>
+                                    <td>@tipo.IdTipoCuenta</td>
+                                    <td>@tipo.Nombre</td>
+                                    <td>@(tipo.Sobregiro?.ToString("C") ?? "N/A")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Tipos de Documento -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Tipos de Documento</h5>
+            </div>
+            <div class="card-body">
+                @if (tiposDocumento == null)
+                {
+                    <p><em>Cargando...</em></p>
+                }
+                else if (!tiposDocumento.Any())
+                {
+                    <p class="text-muted">No hay tipos de documento registrados.</p>
+                }
+                else
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                                <th>Sigla</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tipo in tiposDocumento)
+                            {
+                                <tr>
+                                    <td>@tipo.IdTipoDocumento</td>
+                                    <td>@tipo.Nombre</td>
+                                    <td><span class="badge bg-secondary">@tipo.Sigla</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Tipos de Movimiento -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Tipos de Movimiento</h5>
+            </div>
+            <div class="card-body">
+                @if (tiposMovimiento == null)
+                {
+                    <p><em>Cargando...</em></p>
+                }
+                else if (!tiposMovimiento.Any())
+                {
+                    <p class="text-muted">No hay tipos de movimiento registrados.</p>
+                }
+                else
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tipo in tiposMovimiento)
+                            {
+                                <tr>
+                                    <td>@tipo.IdTipoMovimiento</td>
+                                    <td>@tipo.Nombre</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Tipos de Sucursal -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Tipos de Sucursal</h5>
+            </div>
+            <div class="card-body">
+                @if (tiposSucursal == null)
+                {
+                    <p><em>Cargando...</em></p>
+                }
+                else if (!tiposSucursal.Any())
+                {
+                    <p class="text-muted">No hay tipos de sucursal registrados.</p>
+                }
+                else
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var tipo in tiposSucursal)
+                            {
+                                <tr>
+                                    <td>@tipo.IdTipoSucursal</td>
+                                    <td>@tipo.Nombre</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Ciudad>? ciudades;
+    private List<TipoCuenta>? tiposCuenta;
+    private List<TipoDocumento>? tiposDocumento;
+    private List<TipoMovimiento>? tiposMovimiento;
+    private List<TipoSucursal>? tiposSucursal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarCatalogos();
+    }
+
+    private async Task CargarCatalogos()
+    {
+        ciudades = await CatalogoService.GetCiudadesAsync();
+        tiposCuenta = await CatalogoService.GetTiposCuentaAsync();
+        tiposDocumento = await CatalogoService.GetTiposDocumentoAsync();
+        tiposMovimiento = await CatalogoService.GetTiposMovimientoAsync();
+        tiposSucursal = await CatalogoService.GetTiposSucursalAsync();
+    }
+}

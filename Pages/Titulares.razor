@@ -1,0 +1,203 @@
+@page "/titulares"
+@using ByteBank.Services
+@inject TitularService TitularService
+
+<PageTitle>Gestión de Titulares</PageTitle>
+
+<h1>Gestión de Titulares</h1>
+<p class="text-muted">Asociar y administrar titulares de cuentas</p>
+
+<div class="row">
+    <!-- Asociar nuevo titular -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Asociar Titular a Cuenta</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label>ID de la Cuenta:</label>
+                    <input type="number" class="form-control" @bind="idCuentaAsociar" />
+                </div>
+                <div class="mb-3">
+                    <label>ID del Cuentahabiente:</label>
+                    <input type="number" class="form-control" @bind="idCuentahabienteAsociar" />
+                </div>
+                <button class="btn btn-success" @onclick="AsociarTitular">
+                    <span class="bi bi-link-45deg"></span> Asociar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remover titular -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Remover Titular de Cuenta</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label>ID de la Cuenta:</label>
+                    <input type="number" class="form-control" @bind="idCuentaRemover" />
+                </div>
+                <div class="mb-3">
+                    <label>ID del Cuentahabiente:</label>
+                    <input type="number" class="form-control" @bind="idCuentahabienteRemover" />
+                </div>
+                <button class="btn btn-danger" @onclick="RemoverTitular">
+                    <span class="bi bi-x-circle"></span> Remover
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultar titulares de cuenta -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Titulares de una Cuenta</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label>ID de la Cuenta:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" @bind="idCuentaConsultar" />
+                        <button class="btn btn-info" @onclick="ConsultarTitulares">
+                            <span class="bi bi-search"></span> Consultar
+                        </button>
+                    </div>
+                </div>
+                @if (resultadoTitulares != null)
+                {
+                    <div class="alert alert-info">
+                        <pre>@resultadoTitulares</pre>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultar cuentas de titular -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Cuentas de un Titular</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label>ID del Cuentahabiente:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" @bind="idCuentahabienteConsultar" />
+                        <button class="btn btn-warning" @onclick="ConsultarCuentas">
+                            <span class="bi bi-search"></span> Consultar
+                        </button>
+                    </div>
+                </div>
+                @if (resultadoCuentas != null)
+                {
+                    <div class="alert alert-warning">
+                        <pre>@resultadoCuentas</pre>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (mensaje != null)
+{
+    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+        @mensaje
+        <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
+    </div>
+}
+
+<div class="alert alert-info mt-4">
+    <h6 class="alert-heading">Información Importante:</h6>
+    <ul class="mb-0">
+        <li>Una cuenta puede tener múltiples titulares</li>
+        <li>Un cuentahabiente puede ser titular de múltiples cuentas</li>
+        <li>No se puede remover el único titular de una cuenta</li>
+        <li>Los IDs deben corresponder a registros existentes</li>
+    </ul>
+</div>
+
+@code {
+    private int idCuentaAsociar;
+    private int idCuentahabienteAsociar;
+    private int idCuentaRemover;
+    private int idCuentahabienteRemover;
+    private int idCuentaConsultar;
+    private int idCuentahabienteConsultar;
+    private string? resultadoTitulares;
+    private string? resultadoCuentas;
+    private string? mensaje;
+    private bool esError;
+
+    private async Task AsociarTitular()
+    {
+        var exito = await TitularService.AsociarTitularAsync(idCuentaAsociar, idCuentahabienteAsociar);
+        if (exito)
+        {
+            mensaje = $"Titular asociado exitosamente a la cuenta {idCuentaAsociar}";
+            esError = false;
+            idCuentaAsociar = 0;
+            idCuentahabienteAsociar = 0;
+        }
+        else
+        {
+            mensaje = "Error al asociar titular. Verifique que los IDs existan y que no esté duplicado.";
+            esError = true;
+        }
+    }
+
+    private async Task RemoverTitular()
+    {
+        var exito = await TitularService.RemoverTitularAsync(idCuentaRemover, idCuentahabienteRemover);
+        if (exito)
+        {
+            mensaje = $"Titular removido exitosamente de la cuenta {idCuentaRemover}";
+            esError = false;
+            idCuentaRemover = 0;
+            idCuentahabienteRemover = 0;
+        }
+        else
+        {
+            mensaje = "Error al remover titular. Verifique que sea el último titular de la cuenta.";
+            esError = true;
+        }
+    }
+
+    private async Task ConsultarTitulares()
+    {
+        var resultado = await TitularService.GetTitularesByCuentaAsync(idCuentaConsultar);
+        if (resultado != null)
+        {
+            resultadoTitulares = System.Text.Json.JsonSerializer.Serialize(resultado, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            mensaje = null;
+        }
+        else
+        {
+            mensaje = $"No se encontraron titulares para la cuenta {idCuentaConsultar}";
+            esError = true;
+            resultadoTitulares = null;
+        }
+    }
+
+    private async Task ConsultarCuentas()
+    {
+        var resultado = await TitularService.GetCuentasByCuentahabienteAsync(idCuentahabienteConsultar);
+        if (resultado != null)
+        {
+            resultadoCuentas = System.Text.Json.JsonSerializer.Serialize(resultado, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            mensaje = null;
+        }
+        else
+        {
+            mensaje = $"No se encontraron cuentas para el cuentahabiente {idCuentahabienteConsultar}";
+            esError = true;
+            resultadoCuentas = null;
+        }
+    }
+}

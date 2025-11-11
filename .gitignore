@@ -184,3 +184,9 @@ FodyWeavers.xsd
 # Blazor specific
 wwwroot/service-worker-assets.js
 **/launchSettings.json
+
+
+# Bin and Obj folders
+bin/*
+obj/*
+obj/Debug/
