@@ -1074,10 +1074,10 @@ D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\byte_ba
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\ref\byte_bank_blazor.dll
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\byte_bank_blazor.sourcelink.json
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\p23uqmyscs-q63tn8pjrr.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.23ltf7zv4k.wasm
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.jt9hj10eoj.pdb
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.23ltf7zv4k.wasm.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.jt9hj10eoj.pdb.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\di3za72dx0-23ltf7zv4k.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\5cnfe54xs6-jt9hj10eoj.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\qql09gx4wr-nwfjaisdl4.gz
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.pt0qe33syk.wasm
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.2v19ocr6or.pdb
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.pt0qe33syk.wasm.gz
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.2v19ocr6or.pdb.gz
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\di3za72dx0-pt0qe33syk.gz
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\5cnfe54xs6-2v19ocr6or.gz
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\qql09gx4wr-v7lh6l8n4a.gz

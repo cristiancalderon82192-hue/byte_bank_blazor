@@ -14,6 +14,7 @@ Aplicación frontend construida con Blazor WebAssembly para consumir la API REST
 | Préstamos | Completado | CRUD completo y calculadora de cuotas |
 | Sucursales | Completado | Gestión de sucursales bancarias |
 | Titulares | Completado | Asociar/remover titulares a cuentas |
+| Ciudades | Completado | Gestión de ciudades del sistema |
 | Catálogos | Completado | Consulta de datos maestros |
 
 ---
@@ -209,7 +210,28 @@ Accede a `http://localhost:5161` para ver el dashboard principal con acceso a to
 - Consultar cuentas de un titular
 - Soporte para múltiples titulares por cuenta
 
-### 8. Catálogos del Sistema
+### 8.Gestión de Ciudades
+**URL:** `/ciudades`
+
+**Funcionalidades:**
+- Listar todas las ciudades registradas
+- Crear nueva ciudad (con validación de duplicados)
+- Visualización en tarjetas y en tabla detallada
+- Sincronización automática de la lista tras agregar una ciudad
+- Mensajes de éxito o error al crear
+
+**Notas:**
+- Las ciudades se utilizan para asignar direcciones a cuentahabientes y ubicar sucursales.
+- Si no hay ciudades, se muestra una alerta explicativa y se habilita la creación.
+- No es posible eliminar ciudades si existen dependencias (sucursales o clientes asociados).
+
+**Ejemplo de uso:**
+- Ingresar el nombre de la ciudad en el formulario y presionar **Guardar**.
+- El sistema valida que no exista otra ciudad con el mismo nombre.
+- Tras guardar, la nueva ciudad aparece en el listado y en la tabla.
+
+
+### 9. Catálogos del Sistema
 
 **URL:** `/catalogos`
 

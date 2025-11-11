@@ -1,0 +1,169 @@
+@page "/ciudades"
+@using ByteBank.Models
+@using ByteBank.Services
+@inject CatalogoService CatalogoService
+
+<PageTitle>Ciudades</PageTitle>
+
+<h1>Gestión de Ciudades</h1>
+<p class="text-muted">Administración de ciudades disponibles en el sistema</p>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="MostrarFormularioCrear">
+        <span class="bi bi-plus-circle"></span> Nueva Ciudad
+    </button>
+</div>
+
+@if (mostrarFormulario)
+{
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Nueva Ciudad</h5>
+        </div>
+        <div class="card-body">
+            <EditForm Model="@nuevaCiudad" OnValidSubmit="CrearCiudad">
+                <div class="mb-3">
+                    <label>Nombre de la Ciudad:</label>
+                    <InputText class="form-control" @bind-Value="nuevaCiudad.Nombre" placeholder="Ej: Bogotá" />
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (ciudades == null)
+{
+    <p><em>Cargando ciudades...</em></p>
+}
+else if (!ciudades.Any())
+{
+    <div class="alert alert-info">
+        <strong>No hay ciudades registradas.</strong>
+        <p class="mb-0 mt-2">Las ciudades son necesarias para registrar cuentahabientes y sucursales.</p>
+    </div>
+}
+else
+{
+    <div class="mb-3">
+        <strong>Total de ciudades:</strong> @ciudades.Count
+    </div>
+
+    <div class="row">
+        @foreach (var ciudad in ciudades)
+        {
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@ciudad.Nombre</h5>
+                        <p class="card-text text-muted">ID: @ciudad.IdCiudad</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <span class="bi bi-geo-alt"></span> Ciudad
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="table-responsive mt-4">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ciudad in ciudades)
+                {
+                    <tr>
+                        <td>@ciudad.IdCiudad</td>
+                        <td><strong>@ciudad.Nombre</strong></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" disabled>
+                                Ver Detalle
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@if (mensaje != null)
+{
+    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+        @mensaje
+        <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
+    </div>
+}
+
+<div class="card mt-4 bg-light">
+    <div class="card-body">
+        <h6 class="card-title">Información</h6>
+        <p class="card-text mb-0">
+            Las ciudades son datos maestros utilizados en:
+        </p>
+        <ul class="mt-2 mb-0">
+            <li>Registro de cuentahabientes (dirección del cliente)</li>
+            <li>Ubicación de sucursales bancarias</li>
+            <li>Filtros y reportes por zona geográfica</li>
+        </ul>
+    </div>
+</div>
+
+@code {
+    private List<Ciudad>? ciudades;
+    private CiudadCreate nuevaCiudad = new();
+    private bool mostrarFormulario = false;
+    private string? mensaje;
+    private bool esError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarCiudades();
+    }
+
+    private async Task CargarCiudades()
+    {
+        ciudades = await CatalogoService.GetCiudadesAsync();
+    }
+
+    private void MostrarFormularioCrear()
+    {
+        mostrarFormulario = true;
+        nuevaCiudad = new();
+    }
+
+    private void CancelarFormulario()
+    {
+        mostrarFormulario = false;
+        nuevaCiudad = new();
+    }
+
+    private async Task CrearCiudad()
+    {
+        var resultado = await CatalogoService.CreateCiudadAsync(nuevaCiudad);
+        if (resultado != null)
+        {
+            mensaje = $"Ciudad '{resultado.Nombre}' creada exitosamente";
+            esError = false;
+            mostrarFormulario = false;
+            nuevaCiudad = new();
+            await CargarCiudades();
+        }
+        else
+        {
+            mensaje = "Error al crear la ciudad. Verifique que no exista ya.";
+            esError = true;
+        }
+    }
+}

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("byte_bank_blazor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b43cf205f9be797e73462031e244f20728aa199c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+20613e1cb17df1066cd518ac0ba82d0ef7d79099")]
 [assembly: System.Reflection.AssemblyProductAttribute("byte_bank_blazor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("byte_bank_blazor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -18,11 +18,26 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Ciudad>>($"{ApiBasePath}/ciudades/");
+                return await _httpClient.GetFromJsonAsync<List<Ciudad>>($"{ApiBasePath}/ciudades");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al obtener ciudades: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<Ciudad?> CreateCiudadAsync(CiudadCreate ciudad)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/ciudades", ciudad);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<Ciudad>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al crear ciudad: {ex.Message}");
                 return null;
             }
         }
