@@ -32,8 +32,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Cuentas.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3VlbnRhcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Movimientos.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW92aW1pZW50b3MucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Projects/Proyectos Python/byte_bank/byte_bank_blazor/Pages/Weather.razor]

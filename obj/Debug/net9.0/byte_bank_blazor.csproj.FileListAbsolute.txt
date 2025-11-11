@@ -199,8 +199,6 @@ D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.8vxi4ke5r2.wasm
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.l13ijxccpm.pdb
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\blazor.boot.json
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\blazor.webassembly.js.gz
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\Microsoft.AspNetCore.Authorization.50odlujk1g.wasm.gz
@@ -403,8 +401,6 @@ D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat.gz
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat.gz
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.8vxi4ke5r2.wasm.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.l13ijxccpm.pdb.gz
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\blazor.boot.json.gz
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\byte_bank_blazor.staticwebassets.runtime.json
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\byte_bank_blazor.staticwebassets.endpoints.json
@@ -1068,9 +1064,6 @@ D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compres
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\q72e7ibw6v-tjcz0u77k5.gz
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\5nec45ss1h-tptq2av103.gz
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\5bk53ykyp2-lfu7j35m59.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\di3za72dx0-8vxi4ke5r2.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\5cnfe54xs6-l13ijxccpm.gz
-D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\qql09gx4wr-b96cth8wek.gz
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\staticwebassets.build.json
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\staticwebassets.build.json.cache
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\staticwebassets.development.json
@@ -1080,3 +1073,11 @@ D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\byte_ba
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\refint\byte_bank_blazor.dll
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\byte_bank_blazor.pdb
 D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\ref\byte_bank_blazor.dll
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\byte_bank_blazor.sourcelink.json
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.1gq8a599e0.wasm
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.q743bc218u.pdb
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.1gq8a599e0.wasm.gz
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.q743bc218u.pdb.gz
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\di3za72dx0-1gq8a599e0.gz
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\5cnfe54xs6-q743bc218u.gz
+D:\Projects\Proyectos Python\byte_bank\byte_bank_blazor\obj\Debug\net9.0\compressed\qql09gx4wr-vcefdit0s8.gz

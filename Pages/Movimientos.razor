@@ -1,0 +1,188 @@
+@page "/movimientos"
+@inject CuentaService CuentaService
+@inject MovimientoService MovimientoService
+
+<PageTitle>Movimientos Bancarios</PageTitle>
+
+<h1>💸 Movimientos Bancarios</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5>💰 Depósito</h5>
+            </div>
+            <div class="card-body">
+                <EditForm Model="@deposito" OnValidSubmit="RealizarDeposito">
+                    <div class="mb-3">
+                        <label>Cuenta:</label>
+                        <InputNumber class="form-control" @bind-Value="deposito.IdCuenta" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Sucursal:</label>
+                        <InputNumber class="form-control" @bind-Value="deposito.IdSucursal" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Valor:</label>
+                        <InputNumber class="form-control" @bind-Value="deposito.Valor" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Descripción:</label>
+                        <InputText class="form-control" @bind-Value="deposito.Descripcion" />
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Realizar Depósito</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header bg-danger text-white">
+                <h5>💵 Retiro</h5>
+            </div>
+            <div class="card-body">
+                <EditForm Model="@retiro" OnValidSubmit="RealizarRetiro">
+                    <div class="mb-3">
+                        <label>Cuenta:</label>
+                        <InputNumber class="form-control" @bind-Value="retiro.IdCuenta" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Sucursal:</label>
+                        <InputNumber class="form-control" @bind-Value="retiro.IdSucursal" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Valor:</label>
+                        <InputNumber class="form-control" @bind-Value="retiro.Valor" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Descripción:</label>
+                        <InputText class="form-control" @bind-Value="retiro.Descripcion" />
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100">Realizar Retiro</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5>🔄 Transferencia</h5>
+            </div>
+            <div class="card-body">
+                <EditForm Model="@transferencia" OnValidSubmit="RealizarTransferencia">
+                    <div class="mb-3">
+                        <label>Cuenta Origen:</label>
+                        <InputNumber class="form-control" @bind-Value="transferencia.IdCuentaOrigen" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Cuenta Destino:</label>
+                        <InputNumber class="form-control" @bind-Value="transferencia.IdCuentaDestino" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Sucursal:</label>
+                        <InputNumber class="form-control" @bind-Value="transferencia.IdSucursal" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Valor:</label>
+                        <InputNumber class="form-control" @bind-Value="transferencia.Valor" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Descripción:</label>
+                        <InputText class="form-control" @bind-Value="transferencia.Descripcion" />
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Realizar Transferencia</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (mensaje != null)
+{
+    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+        @mensaje
+        <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
+    </div>
+}
+
+@code {
+    private DepositoCreate deposito = new();
+    private RetiroCreate retiro = new();
+    private TransferenciaCreate transferencia = new();
+    private string? mensaje;
+    private bool esError;
+
+    private async Task RealizarDeposito()
+    {
+        try
+        {
+            var resultado = await MovimientoService.RealizarDepositoAsync(deposito);
+            if (resultado != null)
+            {
+                mensaje = $"Depósito realizado exitosamente. Movimiento ID: {resultado.IdMovimiento}";
+                esError = false;
+                deposito = new(); // Limpiar formulario
+            }
+            else
+            {
+                mensaje = "Error al realizar el depósito";
+                esError = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error: {ex.Message}";
+            esError = true;
+        }
+    }
+
+    private async Task RealizarRetiro()
+    {
+        try
+        {
+            var resultado = await MovimientoService.RealizarRetiroAsync(retiro);
+            if (resultado != null)
+            {
+                mensaje = $"Retiro realizado exitosamente. Movimiento ID: {resultado.IdMovimiento}";
+                esError = false;
+                retiro = new();
+            }
+            else
+            {
+                mensaje = "Error al realizar el retiro";
+                esError = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error: {ex.Message}";
+            esError = true;
+        }
+    }
+
+    private async Task RealizarTransferencia()
+    {
+        try
+        {
+            var resultado = await MovimientoService.RealizarTransferenciaAsync(transferencia);
+            if (resultado != null)
+            {
+                mensaje = "Transferencia realizada exitosamente";
+                esError = false;
+                transferencia = new();
+            }
+            else
+            {
+                mensaje = "Error al realizar la transferencia";
+                esError = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error: {ex.Message}";
+            esError = true;
+        }
+    }
+}
