@@ -9,6 +9,10 @@ namespace ByteBank.Models
         public string? Direccion { get; set; }
         public string? Telefono { get; set; }
         public int IdCiudad { get; set; }
+
+        // Campos relacionados desde el backend
+        public string? NombreCiudad { get; set; }
+        public string? TipoDocumentoNombre { get; set; }
     }
 
     public class CuentahabienteCreate
