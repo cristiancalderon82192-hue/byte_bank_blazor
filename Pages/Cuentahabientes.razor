@@ -67,11 +67,11 @@
                         }
                         else
                         {
-                            <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdTipoDocumento">
+                            <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdTipoDocumento" TValue="int">
                                 <option value="0">Seleccionar...</option>
                                 @foreach (var tipo in tiposDocumento)
                                 {
-                                    <option value="@tipo.IdTipoDocumento">@(tipo.Nombre ?? $"ID: {tipo.IdTipoDocumento}")</option>
+                                    <option value="@tipo.IdTipoDocumento">@((!string.IsNullOrWhiteSpace(tipo.Nombre) ? tipo.Nombre : (!string.IsNullOrWhiteSpace(tipo.Sigla) ? tipo.Sigla : $"ID: {tipo.IdTipoDocumento}")))</option>
                                 }
                             </InputSelect>
                             @if (tiposDocumento.Count == 0)
@@ -106,11 +106,11 @@
                         }
                         else
                         {
-                            <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdCiudad">
+                            <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdCiudad" TValue="int">
                                 <option value="0">Seleccionar...</option>
                                 @foreach (var ciudad in ciudades)
                                 {
-                                    <option value="@ciudad.IdCiudad">@(ciudad.Nombre ?? $"ID: {ciudad.IdCiudad}")</option>
+                                    <option value="@ciudad.IdCiudad">@((!string.IsNullOrWhiteSpace(ciudad.Nombre) ? ciudad.Nombre : $"ID: {ciudad.IdCiudad}"))</option>
                                 }
                             </InputSelect>
                             @if (ciudades.Count == 0)
@@ -123,6 +123,10 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label>Clave:</label>
+                        @if (esModoEdicion)
+                        {
+                            <div class="mb-2"><small class="text-info">Al editar un cuentahabiente, se debe ingresar también la clave.</small></div>
+                        }
                         <InputText type="password" class="form-control" @bind-Value="nuevoCuentahabiente.Clave" />
                     </div>
                 </div>
@@ -315,18 +319,10 @@ else
             {
                 Console.WriteLine("Advertencia: ciudades es null");
             }
-            else
-            {
-                Console.WriteLine($"Ciudades cargadas: {ciudades.Count}");
-            }
-            
+
             if (tiposDocumento == null)
             {
                 Console.WriteLine("Advertencia: tiposDocumento es null");
-            }
-            else
-            {
-                Console.WriteLine($"Tipos de documento cargados: {tiposDocumento.Count}");
             }
         }
         catch (Exception ex)
@@ -379,6 +375,14 @@ else
         }
         else
         {
+            // Validaciones básicas antes de enviar al backend
+            if (nuevoCuentahabiente.IdTipoDocumento == 0 || nuevoCuentahabiente.IdCiudad == 0)
+            {
+                mensaje = "Debe seleccionar Tipo de Documento y Ciudad.";
+                esError = true;
+                StateHasChanged();
+                return;
+            }
             var resultado = await CuentahabienteService.CreateCuentahabienteAsync(nuevoCuentahabiente);
             if (resultado != null)
             {

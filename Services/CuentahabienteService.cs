@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using ByteBank.Models;
+using System.Text.Json;
 
 namespace ByteBank.Services
 {
@@ -7,6 +8,11 @@ namespace ByteBank.Services
     {
         private readonly HttpClient _httpClient;
         private const string ApiBasePath = "/api/cuentahabientes";
+        // Enviar JSON con nombres de propiedad tal como están en los modelos (PascalCase)
+        private static readonly JsonSerializerOptions PascalCaseSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = null
+        };
 
         public CuentahabienteService(HttpClient httpClient)
         {
@@ -56,9 +62,17 @@ namespace ByteBank.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/", cuentahabiente);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<Cuentahabiente>();
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/", cuentahabiente, PascalCaseSerializerOptions);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<Cuentahabiente>();
+                }
+                else
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Error al crear cuentahabiente. Status: {(int)response.StatusCode} {response.ReasonPhrase}. Body: {body}");
+                    return null;
+                }
             }
             catch (Exception ex)
             {
@@ -71,9 +85,17 @@ namespace ByteBank.Services
         {
             try
             {
-                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/{id}", cuentahabiente);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<Cuentahabiente>();
+                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/{id}", cuentahabiente, PascalCaseSerializerOptions);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<Cuentahabiente>();
+                }
+                else
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Error al actualizar cuentahabiente. Status: {(int)response.StatusCode} {response.ReasonPhrase}. Body: {body}");
+                    return null;
+                }
             }
             catch (Exception ex)
             {

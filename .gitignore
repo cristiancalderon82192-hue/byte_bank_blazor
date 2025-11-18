@@ -189,4 +189,4 @@ wwwroot/service-worker-assets.js
 # Bin and Obj folders
 bin/*
 obj/*
-obj/Debug/
+obj/Debug/net9.0/*
