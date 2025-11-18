@@ -111,5 +111,39 @@ namespace ByteBank.Services
                 return null;
             }
         }
+
+        // Actualizar ciudad
+        public async Task<Ciudad?> UpdateCiudadAsync(int id, CiudadCreate ciudad)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/ciudades/{id}", ciudad);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<Ciudad>();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al actualizar ciudad: {ex.Message}");
+                return null;
+            }
+        }
+
+        // Eliminar ciudad
+        public async Task<bool> DeleteCiudadAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{ApiBasePath}/ciudades/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar ciudad: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

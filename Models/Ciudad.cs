@@ -20,6 +20,7 @@ namespace ByteBank.Models
 
     public class CiudadCreate
     {
+        [System.Text.Json.Serialization.JsonPropertyName("Ciudad")]
         public string Nombre { get; set; } = string.Empty;
     }
 }

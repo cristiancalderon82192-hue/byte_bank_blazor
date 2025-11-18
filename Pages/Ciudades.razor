@@ -2,6 +2,7 @@
 @using ByteBank.Models
 @using ByteBank.Services
 @inject CatalogoService CatalogoService
+@inject CuentahabienteService CuentahabienteService
 
 <PageTitle>Ciudades</PageTitle>
 
@@ -13,24 +14,54 @@
         <span class="bi bi-plus-circle"></span> Nueva Ciudad
     </button>
 </div>
-
-@if (mostrarFormulario)
+@if (mostrarFormulario || editarFormulario || mostrarConfirmEliminar)
 {
     <div class="card mb-3">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Nueva Ciudad</h5>
+        <div class="card-header @(mostrarFormulario ? "bg-primary text-white" : editarFormulario ? "bg-warning text-dark" : "bg-danger text-white")">
+            <h5 class="mb-0">@(mostrarFormulario ? "Nueva Ciudad" : editarFormulario ? "Editar Ciudad" : "Confirmar eliminación")</h5>
         </div>
         <div class="card-body">
-            <EditForm Model="@nuevaCiudad" OnValidSubmit="CrearCiudad">
-                <div class="mb-3">
-                    <label>Nombre de la Ciudad:</label>
-                    <InputText class="form-control" @bind-Value="nuevaCiudad.Nombre" placeholder="Ej: Bogotá" />
-                </div>
+            @if (mostrarFormulario)
+            {
+                <EditForm Model="@nuevaCiudad" OnValidSubmit="CrearCiudad">
+                    <div class="mb-3">
+                        <label>Nombre de la Ciudad:</label>
+                        <InputText class="form-control" @bind-Value="nuevaCiudad.Nombre" placeholder="Ej: Bogotá" />
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
+                    </div>
+                </EditForm>
+            }
+            else if (editarFormulario && ciudadEnEdicion != null)
+            {
+                <EditForm Model="@ciudadEnEdicion" OnValidSubmit="GuardarEdicion">
+                    <div class="mb-3">
+                        <label>Nombre:</label>
+                        <InputText class="form-control" @bind-Value="ciudadEnEdicion.Nombre" />
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="button" class="btn btn-secondary" @onclick="CancelarEdicion">Cancelar</button>
+                    </div>
+                </EditForm>
+            }
+            else if (mostrarConfirmEliminar && ciudadAEliminarId.HasValue)
+            {
+                <p>¿Desea eliminar la ciudad <strong>@ciudadAEliminarNombre</strong>?</p>
+                @if (!string.IsNullOrEmpty(cuentahabienteAsociadoMensaje))
+                {
+                    <div class="alert alert-warning">
+                        <strong>Atención:</strong> Esta ciudad está asociada al/los cuentahabiente(s):
+                        <div class="mt-2"><em>@cuentahabienteAsociadoMensaje</em></div>
+                    </div>
+                }
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">Guardar</button>
-                    <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
+                    <button class="btn btn-danger" @onclick="ConfirmarEliminarAsync">Eliminar definitivamente</button>
+                    <button class="btn btn-secondary" @onclick="CancelarEliminar">Cancelar</button>
                 </div>
-            </EditForm>
+            }
         </div>
     </div>
 }
@@ -60,7 +91,11 @@ else
                     <div class="card-body">
                         <h5 class="card-title">@ciudad.Nombre</h5>
                         <p class="card-text text-muted">ID: @ciudad.IdCiudad</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <button class="btn btn-sm btn-primary me-2" @onclick="() => MostrarEditarCiudad(ciudad)">Editar</button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => SolicitarEliminarCiudad(ciudad)">Eliminar</button>
+                            </div>
                             <small class="text-muted">
                                 <span class="bi bi-geo-alt"></span> Ciudad
                             </small>
@@ -71,31 +106,7 @@ else
         }
     </div>
 
-    <div class="table-responsive mt-4">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var ciudad in ciudades)
-                {
-                    <tr>
-                        <td>@ciudad.IdCiudad</td>
-                        <td><strong>@ciudad.Nombre</strong></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-primary" disabled>
-                                Ver Detalle
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    @* Bloques de edición/confirmación movidos al card superior para evitar duplicación *@
 }
 
 @if (mensaje != null)
@@ -126,6 +137,16 @@ else
     private bool mostrarFormulario = false;
     private string? mensaje;
     private bool esError;
+
+    // Edit
+    private Ciudad? ciudadEnEdicion;
+    private bool editarFormulario = false;
+
+    // Delete
+    private int? ciudadAEliminarId;
+    private string? ciudadAEliminarNombre;
+    private string? cuentahabienteAsociadoMensaje;
+    private bool mostrarConfirmEliminar = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -165,5 +186,93 @@ else
             mensaje = "Error al crear la ciudad. Verifique que no exista ya.";
             esError = true;
         }
+    }
+
+    // Mostrar edición inline
+    private void MostrarEditarCiudad(Ciudad ciudad)
+    {
+        // crear copia para editar sin mutar la lista hasta guardar
+        ciudadEnEdicion = new Ciudad { IdCiudad = ciudad.IdCiudad, Nombre = ciudad.Nombre };
+        editarFormulario = true;
+    }
+
+    private void CancelarEdicion()
+    {
+        editarFormulario = false;
+        ciudadEnEdicion = null;
+    }
+
+    private async Task GuardarEdicion()
+    {
+        if (ciudadEnEdicion == null)
+            return;
+
+        var updated = await CatalogoService.UpdateCiudadAsync(ciudadEnEdicion.IdCiudad, new CiudadCreate { Nombre = ciudadEnEdicion.Nombre });
+        if (updated != null)
+        {
+            mensaje = $"Ciudad '{updated.Nombre}' actualizada correctamente.";
+            esError = false;
+            editarFormulario = false;
+            ciudadEnEdicion = null;
+            await CargarCiudades();
+        }
+        else
+        {
+            mensaje = "Error al actualizar la ciudad.";
+            esError = true;
+        }
+    }
+
+    // Solicitar eliminación mostrando la asociación con cuentahabientes
+    private async Task SolicitarEliminarCiudad(Ciudad ciudad)
+    {
+        ciudadAEliminarId = ciudad.IdCiudad;
+        ciudadAEliminarNombre = ciudad.Nombre;
+
+        var chs = await CuentahabienteService.GetCuentahabientesAsync();
+        var asociados = chs?.Where(x => x.IdCiudad == ciudad.IdCiudad).ToList();
+        if (asociados != null && asociados.Any())
+        {
+            cuentahabienteAsociadoMensaje = string.Join(", ", asociados.Select(a => $"{a.Nombre} ({a.Documento})"));
+        }
+        else
+        {
+            cuentahabienteAsociadoMensaje = null;
+        }
+
+        mostrarConfirmEliminar = true;
+    }
+
+    private async Task ConfirmarEliminarAsync()
+    {
+        if (!ciudadAEliminarId.HasValue)
+            return;
+
+        var ok = await CatalogoService.DeleteCiudadAsync(ciudadAEliminarId.Value);
+        if (ok)
+        {
+            mensaje = $"Ciudad '{ciudadAEliminarNombre}' eliminada correctamente.";
+            esError = false;
+            await CargarCiudades();
+        }
+        else
+        {
+            mensaje = "Error al eliminar la ciudad.";
+            esError = true;
+        }
+
+        // limpiar estado
+        mostrarConfirmEliminar = false;
+        ciudadAEliminarId = null;
+        ciudadAEliminarNombre = null;
+        cuentahabienteAsociadoMensaje = null;
+    }
+
+    private void CancelarEliminar()
+    {
+        mostrarConfirmEliminar = false;
+        ciudadAEliminarId = null;
+        ciudadAEliminarNombre = null;
+        cuentahabienteAsociadoMensaje = null;
     }
 }
