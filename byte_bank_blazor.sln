@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "byte_bank_blazor", "byte_bank_blazor.csproj", "{D6B01C49-9486-A435-24A0-36231F99560E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6B01C49-9486-A435-24A0-36231F99560E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6B01C49-9486-A435-24A0-36231F99560E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6B01C49-9486-A435-24A0-36231F99560E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6B01C49-9486-A435-24A0-36231F99560E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9044BA70-3627-4E79-95DE-67785F800EAD}
+	EndGlobalSection
+EndGlobal

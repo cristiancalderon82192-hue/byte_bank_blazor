@@ -1,10 +1,22 @@
 @page "/cuentahabientes"
 @using ByteBank.Models
 @using ByteBank.Services
+@using Microsoft.AspNetCore.Components.Web
 @inject CuentahabienteService CuentahabienteService
 @inject CatalogoService CatalogoService
 
 <PageTitle>Cuentahabientes</PageTitle>
+
+<style>
+    .form-select option {
+        color: #212529 !important;
+        background-color: #fff !important;
+    }
+    .form-select:focus option {
+        color: #212529 !important;
+        background-color: #fff !important;
+    }
+</style>
 
 <h1>Cuentahabientes</h1>
 
@@ -16,706 +28,135 @@
     </div>
     <div class="col-md-6">
         <div class="input-group">
-            <input type="text" class="form-control" placeholder="Buscar por documento..." @bind="busqueda" />
+            <input type="text" class="form-control" placeholder="Buscar por documento..." @bind="busqueda" @onkeypress="OnKeyPress" />
             <button class="btn btn-outline-secondary" @onclick="BuscarPorDocumento">
                 <span class="bi bi-search"></span> Buscar
             </button>
+            @if (!string.IsNullOrWhiteSpace(busqueda))
+            {
+                <button class="btn btn-outline-secondary" @onclick="LimpiarBusqueda" title="Limpiar búsqueda">
+                    <span class="bi bi-x"></span>
+                </button>
+            }
         </div>
     </div>
 </div>
 
-@if
- 
-(
-mostrarFormulario
-)
-
+@if (mostrarFormulario)
 {
-
-    
-<
-div
- 
-class
-=
-"
-card mb-3
-"
->
-
-        
-<
-div
- 
-class
-=
-"
-card-header
-"
->
-
-            
-<
-h5
->
-Nuevo Cuentahabiente
-</
-h5
->
-
-        
-</
-div
->
-
-        
-<
-div
- 
-class
-=
-"
-card-body
-"
->
-
-            
-<
-EditForm
- 
-Model
-=
-"
-@nuevoCuentahabiente
-"
- 
-OnValidSubmit
-=
-"
-CrearCuentahabiente
-"
->
-
-                
-<
-div
- 
-class
-=
-"
-row
-"
->
-
-                    
-<
-div
- 
-class
-=
-"
-col-md-6 mb-3
-"
->
-
-                        
-<
-label
->
-Nombre:
-</
-label
->
-
-                        
-<
-InputText
- 
-class
-=
-"
-form-control
-"
- 
-@bind-Value
-=
-"
-nuevoCuentahabiente.Nombre
-"
- 
-/>
-
-                    
-</
-div
->
-
-                    
-<
-div
- 
-class
-=
-"
-col-md-3 mb-3
-"
->
-
-                        
-<
-label
->
-Tipo Documento:
-</
-label
->
-
-                        
-<
-InputSelect
- 
-class
-=
-"
-form-select
-"
- 
-@bind-Value
-=
-"
-nuevoCuentahabiente.IdTipoDocumento
-"
->
-
-                            
-<
-option
- 
-value
-=
-"
-0
-"
->
-Seleccionar...
-</
-option
->
-
-                            
-@if
- 
-(
-tiposDocumento 
-!=
- 
-null
-)
-
-                            
-{
-
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>@(esModoEdicion ? "Editar Cuentahabiente" : "Nuevo Cuentahabiente")</h5>
+        </div>
+        <div class="card-body">
+            <EditForm Model="@nuevoCuentahabiente" OnValidSubmit="CrearCuentahabiente">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Nombre:</label>
+                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Nombre" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Tipo Documento:</label>
+                        @if (tiposDocumento == null)
+                        {
+                            <div class="form-select"><em>Cargando tipos de documento...</em></div>
+                        }
+                        else if (!tiposDocumento.Any())
+                        {
+                            <div class="form-select text-danger"><em>No hay tipos de documento disponibles</em></div>
+                        }
+                        else
+                        {
+                            <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdTipoDocumento">
+                                <option value="0">Seleccionar...</option>
                                 @foreach (var tipo in tiposDocumento)
-
-                                
-{
-
-                                    
-<
-option
- 
-value
-=
-"
-@tipo.IdTipoDocumento
-"
->
-@tipo.Nombre
-</
-option
->
-
-                                
-}
-
-                            
-}
-
-                        
-</
-InputSelect
->
-
-                    
-</
-div
->
-
-                    
-<
-div
- 
-class
-=
-"
-col-md-3 mb-3
-"
->
-
-                        
-<
-label
->
-Documento:
-</
-label
->
-
-                        
-<
-InputText
- 
-class
-=
-"
-form-control
-"
- 
-@bind-Value
-=
-"
-nuevoCuentahabiente.Documento
-"
- 
-/>
-
-                    
-</
-div
->
-
-                
-</
-div
->
-
-                
-<
-div
- 
-class
-=
-"
-row
-"
->
-
-                    
-<
-div
- 
-class
-=
-"
-col-md-6 mb-3
-"
->
-
-                        
-<
-label
->
-Dirección:
-</
-label
->
-
-                        
-<
-InputText
- 
-class
-=
-"
-form-control
-"
- 
-@bind-Value
-=
-"
-nuevoCuentahabiente.Direccion
-"
- 
-/>
-
-                    
-</
-div
->
-
-                    
-<
-div
- 
-class
-=
-"
-col-md-3 mb-3
-"
->
-
-                        
-<
-label
->
-Teléfono:
-</
-label
->
-
-                        
-<
-InputText
- 
-class
-=
-"
-form-control
-"
- 
-@bind-Value
-=
-"
-nuevoCuentahabiente.Telefono
-"
- 
-/>
-
-                    
-</
-div
->
-
-                    
-<
-div
- 
-class
-=
-"
-col-md-3 mb-3
-"
->
-
-                        
-<
-label
->
-Ciudad:
-</
-label
->
-
-                        
-<
-InputSelect
- 
-class
-=
-"
-form-select
-"
- 
-@bind-Value
-=
-"
-nuevoCuentahabiente.IdCiudad
-"
->
-
-                            
-<
-option
- 
-value
-=
-"
-0
-"
->
-Seleccionar...
-</
-option
->
-
-                            
-@if
- 
-(
-ciudades 
-!=
- 
-null
-)
-
-                            
-{
-
+                                {
+                                    <option value="@tipo.IdTipoDocumento">@(tipo.Nombre ?? $"ID: {tipo.IdTipoDocumento}")</option>
+                                }
+                            </InputSelect>
+                            @if (tiposDocumento.Count == 0)
+                            {
+                                <small class="text-muted">No hay tipos de documento disponibles. Por favor, créelos primero en la sección de Catálogos.</small>
+                            }
+                        }
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Documento:</label>
+                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Documento" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Dirección:</label>
+                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Direccion" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Teléfono:</label>
+                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Telefono" />
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>Ciudad:</label>
+                        @if (ciudades == null)
+                        {
+                            <div class="form-select"><em>Cargando ciudades...</em></div>
+                        }
+                        else if (!ciudades.Any())
+                        {
+                            <div class="form-select text-danger"><em>No hay ciudades disponibles</em></div>
+                        }
+                        else
+                        {
+                            <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdCiudad">
+                                <option value="0">Seleccionar...</option>
                                 @foreach (var ciudad in ciudades)
-
-                                
-{
-
-                                    
-<
-option
- 
-value
-=
-"
-@ciudad.IdCiudad
-"
->
-@ciudad.Nombre
-</
-option
->
-
-                                
-}
-
-                            
-}
-
-                        
-</
-InputSelect
->
-
-                    
-</
-div
->
-
-                
-</
-div
->
-
-                
-<
-div
- 
-class
-=
-"
-row
-"
->
-
-                    
-<
-div
- 
-class
-=
-"
-col-md-6 mb-3
-"
->
-
-                        
-<
-label
->
-Clave:
-</
-label
->
-
-                        
-<
-InputText
- 
-type
-=
-"
-password
-"
- 
-class
-=
-"
-form-control
-"
- 
-@bind-Value
-=
-"
-nuevoCuentahabiente.Clave
-"
- 
-/>
-
-                    
-</
-div
->
-
-                
-</
-div
->
-
-                
-<
-div
- 
-class
-=
-"
-d-flex gap-2
-"
->
-
-                    
-<
-button
- 
-type
-=
-"
-submit
-"
- 
-class
-=
-"
-btn btn-success
-"
->
-Guardar
-</
-button
->
-
-                    
-<
-button
- 
-type
-=
-"
-button
-"
- 
-class
-=
-"
-btn btn-secondary
-"
- 
-@onclick
-=
-"
-CancelarFormulario
-"
->
-Cancelar
-</
-button
->
-
-                
-</
-div
->
-
-            
-</
-EditForm
->
-
-        
-</
-div
->
-
-    
-</
-div
->
-
+                                {
+                                    <option value="@ciudad.IdCiudad">@(ciudad.Nombre ?? $"ID: {ciudad.IdCiudad}")</option>
+                                }
+                            </InputSelect>
+                            @if (ciudades.Count == 0)
+                            {
+                                <small class="text-muted">No hay ciudades disponibles. Por favor, créelas primero en la sección de Ciudades.</small>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Clave:</label>
+                        <InputText type="password" class="form-control" @bind-Value="nuevoCuentahabiente.Clave" />
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        @(esModoEdicion ? "Actualizar" : "Guardar")
+                    </button>
+                    <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">
+                        Cancelar
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
 }
 
 
-@if
- 
-(
-cuentahabientes 
-==
- 
-null
-)
+@if (cuentahabientes == null)
 
 {
 
     
-<
-p
->
-<
-em
->
-Cargando cuentahabientes...
-</
-em
->
-</
-p
->
+<p><em>Cargando cuentahabientes...</em></p>
 
 }
 
-else
- 
-if
- 
-(
-!
-cuentahabientes
-.
-Any
-(
-)
-)
+else if (!cuentahabientes.Any())
 
 {
 
     
-<
-div
- 
-class
-=
-"
-alert alert-info
-"
->
-
-        
-<
-strong
->
-No hay cuentahabientes registrados.
-</
-strong
->
-
-    
-</
-div
->
+<div class="alert alert-info">
+        <strong>No hay cuentahabientes registrados.</strong>
+    </div>
 
 }
 
@@ -805,9 +246,14 @@ else
                     </td>
                     <td>@cuentahabiente.Direccion</td>
                     <td>
-                        <button class="btn btn-sm btn-danger" @onclick="() => EliminarCuentahabiente(cuentahabiente.IdCuentahabiente)">
-                            Eliminar
-                        </button>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-primary me-2" @onclick="() => MostrarFormularioEditar(cuentahabiente.IdCuentahabiente)">
+                                <span class="bi bi-pencil"></span> Editar
+                            </button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => EliminarCuentahabiente(cuentahabiente.IdCuentahabiente)">
+                                <span class="bi bi-trash"></span> Eliminar
+                            </button>
+                        </div>
                     </td>
                 </tr>
             }
@@ -817,66 +263,15 @@ else
 }
 
 
-@if
- 
-(
-mensaje 
-!=
- 
-null
-)
+@if (mensaje != null)
 
 {
 
     
-<
-div
- 
-class
-=
-"
-alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show"
- 
-role
-=
-"
-alert
-"
->
-
-        
-@mensaje
-
-        
-<
-button
- 
-type
-=
-"
-button
-"
- 
-class
-=
-"
-btn-close
-"
- 
-@onclick
-=
-"
-() => mensaje = null
-"
->
-</
-button
->
-
-    
-</
-div
->
+<div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+        @mensaje
+        <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
+    </div>
 
 }
 
@@ -885,8 +280,19 @@ div
     private List<Cuentahabiente>? cuentahabientes;
     private List<Ciudad>? ciudades;
     private List<TipoDocumento>? tiposDocumento;
-    private CuentahabienteCreate nuevoCuentahabiente = new();
+    private CuentahabienteCreate nuevoCuentahabiente = new CuentahabienteCreate
+    {
+        Nombre = string.Empty,
+        IdTipoDocumento = 0,
+        Documento = string.Empty,
+        Direccion = string.Empty,
+        Telefono = string.Empty,
+        IdCiudad = 0,
+        Clave = string.Empty
+    };
     private bool mostrarFormulario = false;
+    private bool esModoEdicion = false;
+    private int? idCuentahabienteEditar = null;
     private string? mensaje;
     private bool esError;
     private string busqueda = string.Empty;
@@ -898,36 +304,165 @@ div
 
     private async Task CargarDatos()
     {
-        cuentahabientes = await CuentahabienteService.GetCuentahabientesAsync();
-        ciudades = await CatalogoService.GetCiudadesAsync();
-        tiposDocumento = await CatalogoService.GetTiposDocumentoAsync();
+        try
+        {
+            cuentahabientes = await CuentahabienteService.GetCuentahabientesAsync();
+            ciudades = await CatalogoService.GetCiudadesAsync();
+            tiposDocumento = await CatalogoService.GetTiposDocumentoAsync();
+            
+            // Verificar que los datos se cargaron correctamente
+            if (ciudades == null)
+            {
+                Console.WriteLine("Advertencia: ciudades es null");
+            }
+            else
+            {
+                Console.WriteLine($"Ciudades cargadas: {ciudades.Count}");
+            }
+            
+            if (tiposDocumento == null)
+            {
+                Console.WriteLine("Advertencia: tiposDocumento es null");
+            }
+            else
+            {
+                Console.WriteLine($"Tipos de documento cargados: {tiposDocumento.Count}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar datos: {ex.Message}");
+        }
     }
 
     private void MostrarFormularioCrear()
     {
+        esModoEdicion = false;
+        idCuentahabienteEditar = null;
+        nuevoCuentahabiente = new CuentahabienteCreate
+        {
+            Nombre = string.Empty,
+            IdTipoDocumento = 0,
+            Documento = string.Empty,
+            Direccion = string.Empty,
+            Telefono = string.Empty,
+            IdCiudad = 0,
+            Clave = string.Empty
+        };
         mostrarFormulario = true;
-        nuevoCuentahabiente = new();
+        StateHasChanged();
     }
 
     private void CancelarFormulario()
     {
         mostrarFormulario = false;
-        nuevoCuentahabiente = new();
+        esModoEdicion = false;
+        idCuentahabienteEditar = null;
+        nuevoCuentahabiente = new CuentahabienteCreate
+        {
+            Nombre = string.Empty,
+            IdTipoDocumento = 0,
+            Documento = string.Empty,
+            Direccion = string.Empty,
+            Telefono = string.Empty,
+            IdCiudad = 0,
+            Clave = string.Empty
+        };
+        StateHasChanged();
     }
 
     private async Task CrearCuentahabiente()
     {
-        var resultado = await CuentahabienteService.CreateCuentahabienteAsync(nuevoCuentahabiente);
+        if (esModoEdicion && idCuentahabienteEditar.HasValue)
+        {
+            await ActualizarCuentahabiente();
+        }
+        else
+        {
+            var resultado = await CuentahabienteService.CreateCuentahabienteAsync(nuevoCuentahabiente);
+            if (resultado != null)
+            {
+                mensaje = "Cuentahabiente creado exitosamente";
+                esError = false;
+                mostrarFormulario = false;
+                esModoEdicion = false;
+                idCuentahabienteEditar = null;
+                nuevoCuentahabiente = new CuentahabienteCreate
+                {
+                    Nombre = string.Empty,
+                    IdTipoDocumento = 0,
+                    Documento = string.Empty,
+                    Direccion = string.Empty,
+                    Telefono = string.Empty,
+                    IdCiudad = 0,
+                    Clave = string.Empty
+                };
+                await CargarDatos();
+            }
+            else
+            {
+                mensaje = "Error al crear el cuentahabiente";
+                esError = true;
+            }
+        }
+        StateHasChanged();
+    }
+
+    private async Task MostrarFormularioEditar(int id)
+    {
+        var cuentahabiente = await CuentahabienteService.GetCuentahabienteAsync(id);
+        if (cuentahabiente != null)
+        {
+            nuevoCuentahabiente = new CuentahabienteCreate
+            {
+                Nombre = cuentahabiente.Nombre,
+                IdTipoDocumento = cuentahabiente.IdTipoDocumento,
+                Documento = cuentahabiente.Documento,
+                Direccion = cuentahabiente.Direccion,
+                Telefono = cuentahabiente.Telefono,
+                IdCiudad = cuentahabiente.IdCiudad,
+                Clave = string.Empty // No se muestra la clave por seguridad
+            };
+            idCuentahabienteEditar = id;
+            esModoEdicion = true;
+            mostrarFormulario = true;
+            StateHasChanged();
+        }
+        else
+        {
+            mensaje = "Error al cargar los datos del cuentahabiente";
+            esError = true;
+        }
+    }
+
+    private async Task ActualizarCuentahabiente()
+    {
+        if (!idCuentahabienteEditar.HasValue)
+            return;
+
+        var resultado = await CuentahabienteService.UpdateCuentahabienteAsync(idCuentahabienteEditar.Value, nuevoCuentahabiente);
         if (resultado != null)
         {
-            mensaje = "Cuentahabiente creado exitosamente";
+            mensaje = "Cuentahabiente actualizado exitosamente";
             esError = false;
             mostrarFormulario = false;
+            esModoEdicion = false;
+            idCuentahabienteEditar = null;
+            nuevoCuentahabiente = new CuentahabienteCreate
+            {
+                Nombre = string.Empty,
+                IdTipoDocumento = 0,
+                Documento = string.Empty,
+                Direccion = string.Empty,
+                Telefono = string.Empty,
+                IdCiudad = 0,
+                Clave = string.Empty
+            };
             await CargarDatos();
         }
         else
         {
-            mensaje = "Error al crear el cuentahabiente";
+            mensaje = "Error al actualizar el cuentahabiente";
             esError = true;
         }
     }
@@ -940,16 +475,35 @@ div
             if (resultado != null)
             {
                 cuentahabientes = new List<Cuentahabiente> { resultado };
+                mensaje = null;
             }
             else
             {
                 mensaje = $"No se encontró cuentahabiente con documento {busqueda}";
                 esError = true;
+                cuentahabientes = new List<Cuentahabiente>();
             }
         }
         else
         {
             await CargarDatos();
+        }
+        StateHasChanged();
+    }
+
+    private async Task LimpiarBusqueda()
+    {
+        busqueda = string.Empty;
+        mensaje = null;
+        await CargarDatos();
+        StateHasChanged();
+    }
+
+    private async Task OnKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await BuscarPorDocumento();
         }
     }
 
@@ -968,4 +522,5 @@ div
             esError = true;
         }
     }
+}
 }
