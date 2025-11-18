@@ -35,5 +35,16 @@ namespace ByteBank.Models
     {
         public int IdTipoSucursal { get; set; }
         public string Nombre { get; set; } = string.Empty;
+        // Alias para aceptar JSON que use la clave "TipoSucursal" en lugar de "Nombre"
+        [System.Text.Json.Serialization.JsonPropertyName("TipoSucursal")]
+        public string? TipoSucursalAlias
+        {
+            get => Nombre;
+            set
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                    Nombre = value!;
+            }
+        }
     }
 }

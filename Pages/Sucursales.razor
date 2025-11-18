@@ -98,19 +98,78 @@ else
         {
             <div class="col-md-6 mb-3">
                 <div class="card">
-                    <div class="card-header bg-light">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">@sucursal.Nombre</h5>
+                        <div>
+                            <button class="btn btn-sm btn-primary me-1" @onclick="() => MostrarFormularioEditar(sucursal)">Editar</button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => EliminarSucursal(sucursal.IdSucursal)">Eliminar</button>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <p class="mb-2"><strong>ID:</strong> @sucursal.IdSucursal</p>
-                        <p class="mb-2"><strong>Dirección:</strong> @sucursal.Direccion</p>
-                        <p class="mb-2"><strong>Teléfono:</strong> @sucursal.Telefono</p>
-                        <p class="mb-2"><strong>Horario:</strong> @sucursal.Horario</p>
-                        <div class="d-flex gap-2 mt-3">
-                            <button class="btn btn-sm btn-danger" @onclick="() => EliminarSucursal(sucursal.IdSucursal)">
-                                Eliminar
-                            </button>
-                        </div>
+                        @if (editarSucursalId == sucursal.IdSucursal)
+                        {
+                            <EditForm Model="@editarSucursal" OnValidSubmit="() => GuardarEdicion(sucursal.IdSucursal)">
+                                <div class="row">
+                                    <div class="col-md-12 mb-2">
+                                        <label>Nombre:</label>
+                                        <InputText class="form-control" @bind-Value="editarSucursal.Nombre" />
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label>Ciudad:</label>
+                                        <InputSelect class="form-select" @bind-Value="editarSucursal.IdCiudad">
+                                            <option value="0">Seleccionar...</option>
+                                            @if (ciudades != null)
+                                            {
+                                                @foreach (var ciudad in ciudades)
+                                                {
+                                                    <option value="@ciudad.IdCiudad">@ciudad.Nombre</option>
+                                                }
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label>Tipo de Sucursal:</label>
+                                        <InputSelect class="form-select" @bind-Value="editarSucursal.IdTipoSucursal">
+                                            <option value="0">Seleccionar...</option>
+                                            @if (tiposSucursal != null)
+                                            {
+                                                @foreach (var tipo in tiposSucursal)
+                                                {
+                                                    <option value="@tipo.IdTipoSucursal">@tipo.Nombre</option>
+                                                }
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6 mb-2">
+                                        <label>Dirección:</label>
+                                        <InputText class="form-control" @bind-Value="editarSucursal.Direccion" />
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <label>Teléfono:</label>
+                                        <InputText class="form-control" @bind-Value="editarSucursal.Telefono" />
+                                    </div>
+                                    <div class="col-md-3 mb-2">
+                                        <label>Horario:</label>
+                                        <InputText class="form-control" @bind-Value="editarSucursal.Horario" />
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2 mt-3">
+                                    <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                                    <button type="button" class="btn btn-secondary btn-sm" @onclick="CancelarEdicion">Cancelar</button>
+                                </div>
+                            </EditForm>
+                        }
+                        else
+                        {
+                            <p class="mb-2"><strong>ID:</strong> @sucursal.IdSucursal</p>
+                            <p class="mb-2"><strong>Ciudad:</strong> @(ciudades?.FirstOrDefault(c => c.IdCiudad == sucursal.IdCiudad)?.Nombre ?? "—")</p>
+                            <p class="mb-2"><strong>Dirección:</strong> @sucursal.Direccion</p>
+                            <p class="mb-2"><strong>Teléfono:</strong> @sucursal.Telefono</p>
+                            <p class="mb-2"><strong>Horario:</strong> @sucursal.Horario</p>
+                            <p class="mb-2"><strong>Tipo:</strong> @(tiposSucursal?.FirstOrDefault(t => t.IdTipoSucursal == sucursal.IdTipoSucursal)?.Nombre ?? "—")</p>
+                        }
                     </div>
                 </div>
             </div>
@@ -134,6 +193,8 @@ else
     private bool mostrarFormulario = false;
     private string? mensaje;
     private bool esError;
+    private int? editarSucursalId;
+    private SucursalCreate editarSucursal = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -151,6 +212,26 @@ else
     {
         mostrarFormulario = true;
         nuevaSucursal = new();
+    }
+
+    private void MostrarFormularioEditar(Sucursal s)
+    {
+        editarSucursalId = s.IdSucursal;
+        editarSucursal = new SucursalCreate
+        {
+            Nombre = s.Nombre,
+            IdCiudad = s.IdCiudad,
+            IdTipoSucursal = s.IdTipoSucursal,
+            Direccion = s.Direccion,
+            Telefono = s.Telefono,
+            Horario = s.Horario
+        };
+    }
+
+    private void CancelarEdicion()
+    {
+        editarSucursalId = null;
+        editarSucursal = new();
     }
 
     private void CancelarFormulario()
@@ -188,6 +269,24 @@ else
         else
         {
             mensaje = "Error al eliminar la sucursal";
+            esError = true;
+        }
+    }
+
+    private async Task GuardarEdicion(int id)
+    {
+        var resultado = await SucursalService.UpdateSucursalAsync(id, editarSucursal);
+        if (resultado != null)
+        {
+            mensaje = "Sucursal actualizada exitosamente";
+            esError = false;
+            editarSucursalId = null;
+            editarSucursal = new();
+            await CargarDatos();
+        }
+        else
+        {
+            mensaje = "Error al actualizar la sucursal";
             esError = true;
         }
     }
