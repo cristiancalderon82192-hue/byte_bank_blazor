@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using ByteBank.Models;
 
 namespace ByteBank.Services
@@ -7,6 +8,7 @@ namespace ByteBank.Services
     {
         private readonly HttpClient _httpClient;
         private const string ApiBasePath = "/api/sucursales";
+        public string? LastError { get; private set; }
 
         public SucursalService(HttpClient httpClient)
         {
@@ -17,10 +19,12 @@ namespace ByteBank.Services
         {
             try
             {
+                LastError = null;
                 return await _httpClient.GetFromJsonAsync<List<Sucursal>>($"{ApiBasePath}/");
             }
             catch (Exception ex)
             {
+                LastError = ex.Message;
                 Console.WriteLine($"Error al obtener sucursales: {ex.Message}");
                 return null;
             }
@@ -56,12 +60,22 @@ namespace ByteBank.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/", sucursal);
-                response.EnsureSuccessStatusCode();
+                LastError = null;
+                var options = new JsonSerializerOptions { PropertyNamingPolicy = null };
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/", sucursal, options);
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastError = content;
+                    Console.WriteLine($"Error al crear sucursal: {content}");
+                    return null;
+                }
+
                 return await response.Content.ReadFromJsonAsync<Sucursal>();
             }
             catch (Exception ex)
             {
+                LastError = ex.Message;
                 Console.WriteLine($"Error al crear sucursal: {ex.Message}");
                 return null;
             }
@@ -71,12 +85,22 @@ namespace ByteBank.Services
         {
             try
             {
-                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/{id}", sucursal);
-                response.EnsureSuccessStatusCode();
+                LastError = null;
+                var options = new JsonSerializerOptions { PropertyNamingPolicy = null };
+                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/{id}", sucursal, options);
+                var content = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    LastError = content;
+                    Console.WriteLine($"Error al actualizar sucursal: {content}");
+                    return null;
+                }
+
                 return await response.Content.ReadFromJsonAsync<Sucursal>();
             }
             catch (Exception ex)
             {
+                LastError = ex.Message;
                 Console.WriteLine($"Error al actualizar sucursal: {ex.Message}");
                 return null;
             }
@@ -86,11 +110,21 @@ namespace ByteBank.Services
         {
             try
             {
+                LastError = null;
                 var response = await _httpClient.DeleteAsync($"{ApiBasePath}/{id}");
-                return response.IsSuccessStatusCode;
+                if (!response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    LastError = content;
+                    Console.WriteLine($"Error al eliminar sucursal: {content}");
+                    return false;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
+                LastError = ex.Message;
                 Console.WriteLine($"Error al eliminar sucursal: {ex.Message}");
                 return false;
             }

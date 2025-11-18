@@ -21,11 +21,14 @@
             <h5>Nueva Sucursal</h5>
         </div>
         <div class="card-body">
-            <EditForm Model="@nuevaSucursal" OnValidSubmit="CrearSucursal">
+                <EditForm Model="@nuevaSucursal" OnValidSubmit="CrearSucursal">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label>Nombre de la Sucursal:</label>
                         <InputText class="form-control" @bind-Value="nuevaSucursal.Nombre" />
+                            <ValidationMessage For="@(() => nuevaSucursal.Nombre)" />
                     </div>
                     <div class="col-md-3 mb-3">
                         <label>Ciudad:</label>
@@ -52,6 +55,7 @@
                                 }
                             }
                         </InputSelect>
+                        <ValidationMessage For="@(() => nuevaSucursal.IdTipoSucursal)" />
                     </div>
                 </div>
                 <div class="row">
@@ -109,10 +113,13 @@ else
                         @if (editarSucursalId == sucursal.IdSucursal)
                         {
                             <EditForm Model="@editarSucursal" OnValidSubmit="() => GuardarEdicion(sucursal.IdSucursal)">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
                                 <div class="row">
                                     <div class="col-md-12 mb-2">
                                         <label>Nombre:</label>
                                         <InputText class="form-control" @bind-Value="editarSucursal.Nombre" />
+                                        <ValidationMessage For="@(() => editarSucursal.Nombre)" />
                                     </div>
                                     <div class="col-md-6 mb-2">
                                         <label>Ciudad:</label>
@@ -126,6 +133,7 @@ else
                                                 }
                                             }
                                         </InputSelect>
+                                        <ValidationMessage For="@(() => editarSucursal.IdCiudad)" />
                                     </div>
                                     <div class="col-md-6 mb-2">
                                         <label>Tipo de Sucursal:</label>
@@ -139,6 +147,7 @@ else
                                                 }
                                             }
                                         </InputSelect>
+                                        <ValidationMessage For="@(() => editarSucursal.IdTipoSucursal)" />
                                     </div>
                                 </div>
                                 <div class="row mt-2">
@@ -252,7 +261,7 @@ else
         }
         else
         {
-            mensaje = "Error al crear la sucursal";
+            mensaje = SucursalService.LastError ?? "Error al crear la sucursal";
             esError = true;
         }
     }
@@ -268,7 +277,7 @@ else
         }
         else
         {
-            mensaje = "Error al eliminar la sucursal";
+            mensaje = SucursalService.LastError ?? "Error al eliminar la sucursal";
             esError = true;
         }
     }
@@ -286,7 +295,7 @@ else
         }
         else
         {
-            mensaje = "Error al actualizar la sucursal";
+            mensaje = SucursalService.LastError ?? "Error al actualizar la sucursal";
             esError = true;
         }
     }
