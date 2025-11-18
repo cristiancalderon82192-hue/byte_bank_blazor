@@ -47,7 +47,41 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<TipoCuenta>>($"{ApiBasePath}/tipos/cuenta");
+                var response = await _httpClient.GetAsync($"{ApiBasePath}/tipos/cuenta");
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"Error al obtener tipos de cuenta: status {response.StatusCode}");
+                    return null;
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                if (string.IsNullOrWhiteSpace(content))
+                    return new List<TipoCuenta>();
+
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                // Intentar deserializar como arreglo
+                try
+                {
+                    var lista = System.Text.Json.JsonSerializer.Deserialize<List<TipoCuenta>>(content, options);
+                    if (lista != null)
+                        return lista;
+
+                    // Si no es arreglo, intentar como objeto único
+                    var single = System.Text.Json.JsonSerializer.Deserialize<TipoCuenta>(content, options);
+                    if (single != null)
+                        return new List<TipoCuenta> { single };
+                }
+                catch (System.Text.Json.JsonException je)
+                {
+                    Console.WriteLine($"Error JSON al obtener tipos de cuenta: {je.Message}");
+                    return null;
+                }
+
+                return null;
             }
             catch (Exception ex)
             {
