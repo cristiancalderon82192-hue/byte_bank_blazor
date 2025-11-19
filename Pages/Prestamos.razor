@@ -2,6 +2,7 @@
 @using ByteBank.Models
 @using ByteBank.Services
 @inject PrestamoService PrestamoService
+@inject Microsoft.JSInterop.IJSRuntime JS
 
 <PageTitle>Préstamos</PageTitle>
 
@@ -155,9 +156,12 @@ else
                     <td>@prestamo.Plazo meses</td>
                     <td class="text-success"><strong>$@prestamo.Cuota.ToString("N2")</strong></td>
                     <td>
-                        <button class="btn btn-sm btn-danger" @onclick="() => EliminarPrestamo(prestamo.IdPrestamo)">
-                            Eliminar
-                        </button>
+                            <button class="btn btn-sm btn-primary me-1" @onclick="() => EditarPrestamo(prestamo)">
+                                Editar
+                            </button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => ConfirmEliminar(prestamo.IdPrestamo)">
+                                Eliminar
+                            </button>
                     </td>
                 </tr>
             }
@@ -182,6 +186,7 @@ else
     private bool mostrarCalculadora = false;
     private string? mensaje;
     private bool esError;
+    private int? editingId = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -196,7 +201,25 @@ else
     private void MostrarFormularioCrear()
     {
         mostrarFormulario = true;
-        nuevoPrestamo = new() { Fecha = DateTime.Now };
+        editingId = null;
+        // Autogenerar número con prefijo 'PR' a partir del último número
+        int maxNum = 0;
+        if (prestamos != null && prestamos.Any())
+        {
+            foreach (var p in prestamos)
+            {
+                if (string.IsNullOrWhiteSpace(p.Numero))
+                    continue;
+                var digits = new string(p.Numero.Where(char.IsDigit).ToArray());
+                if (int.TryParse(digits, out var n))
+                {
+                    if (n > maxNum) maxNum = n;
+                }
+            }
+        }
+        var next = maxNum + 1;
+        // Formato total 8 caracteres: 'PR' + 6 dígitos
+        nuevoPrestamo = new() { Fecha = DateTime.Now, Numero = $"PR{next.ToString("D6")}" };
     }
 
     private void MostrarCalculadora()
@@ -210,33 +233,96 @@ else
     {
         mostrarFormulario = false;
         nuevoPrestamo = new() { Fecha = DateTime.Now };
+        editingId = null;
     }
 
     private async Task CalcularCuota()
     {
-        resultadoCalculo = await PrestamoService.CalcularCuotaAsync(calculo);
-        if (resultadoCalculo == null)
+        var (resp, err) = await PrestamoService.CalcularCuotaAsync(calculo);
+        if (err != null)
         {
-            mensaje = "Error al calcular la cuota";
+            mensaje = $"Error al calcular cuota: {err}";
             esError = true;
+            resultadoCalculo = null;
+            return;
         }
+
+        resultadoCalculo = resp;
+    }
+
+    private Task EditarPrestamo(Prestamo prestamo)
+    {
+        editingId = prestamo.IdPrestamo;
+        // mapear a PrestamoCreate
+        nuevoPrestamo = new PrestamoCreate
+        {
+            IdCuenta = prestamo.IdCuenta,
+            Numero = prestamo.Numero,
+            Fecha = prestamo.Fecha,
+            Valor = prestamo.Valor,
+            Interes = prestamo.Interes,
+            Plazo = prestamo.Plazo,
+            Seguro = prestamo.Seguro,
+            Cuota = prestamo.Cuota
+        };
+        mostrarFormulario = true;
+        return Task.CompletedTask;
     }
 
     private async Task CrearPrestamo()
     {
-        var resultado = await PrestamoService.CreatePrestamoAsync(nuevoPrestamo);
-        if (resultado != null)
+        // Calcular la cuota antes de enviar (si el endpoint de cálculo existe)
+        try
         {
-            mensaje = "Préstamo creado exitosamente";
+            var calc = new CalculoCuota { Valor = nuevoPrestamo.Valor, Interes = nuevoPrestamo.Interes, Plazo = nuevoPrestamo.Plazo, Seguro = nuevoPrestamo.Seguro };
+            var (respCalc, errCalc) = await PrestamoService.CalcularCuotaAsync(calc);
+            if (errCalc != null)
+            {
+                // Guardar el error en mensaje para que el usuario lo vea
+                mensaje = $"Error al calcular cuota previo al envío: {errCalc}";
+                esError = true;
+                nuevoPrestamo.Cuota = 0m;
+            }
+            else
+            {
+                nuevoPrestamo.Cuota = respCalc?.CuotaMensual ?? 0m;
+            }
+        }
+        catch
+        {
+            nuevoPrestamo.Cuota = 0m;
+        }
+
+        if (editingId.HasValue)
+        {
+            var (actualizado, err) = await PrestamoService.UpdatePrestamoAsync(editingId.Value, nuevoPrestamo);
+            if (err != null)
+            {
+                mensaje = $"Error al actualizar el préstamo: {err}";
+                esError = true;
+                return;
+            }
+
+            mensaje = "Préstamo actualizado exitosamente";
             esError = false;
             mostrarFormulario = false;
+            editingId = null;
             await CargarPrestamos();
+            return;
         }
-        else
+
+        var (resultado, error) = await PrestamoService.CreatePrestamoAsync(nuevoPrestamo);
+        if (error != null)
         {
-            mensaje = "Error al crear el préstamo";
+            mensaje = $"Error al crear el préstamo: {error}";
             esError = true;
+            return;
         }
+
+        mensaje = "Préstamo creado exitosamente";
+        esError = false;
+        mostrarFormulario = false;
+        await CargarPrestamos();
     }
 
     private async Task EliminarPrestamo(int id)
@@ -252,6 +338,24 @@ else
         {
             mensaje = "Error al eliminar el préstamo";
             esError = true;
+        }
+    }
+
+    private async Task ConfirmEliminar(int id)
+    {
+        bool confirmado = false;
+        try
+        {
+            confirmado = await JS.InvokeAsync<bool>("confirm", $"¿Confirma eliminar el préstamo #{id}? Esta acción no se puede deshacer.");
+        }
+        catch
+        {
+            confirmado = false;
+        }
+
+        if (confirmado)
+        {
+            await EliminarPrestamo(id);
         }
     }
 }

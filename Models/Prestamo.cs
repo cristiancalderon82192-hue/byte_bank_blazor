@@ -22,6 +22,7 @@ namespace ByteBank.Models
         public decimal Interes { get; set; }
         public int Plazo { get; set; }
         public decimal? Seguro { get; set; }
+        public decimal Cuota { get; set; }
     }
 
     public class CalculoCuota
