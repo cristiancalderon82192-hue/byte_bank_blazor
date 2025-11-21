@@ -7,72 +7,96 @@
 <PageTitle>Tipos de Cuenta</PageTitle>
 
 <h1>Tipos de Cuenta</h1>
+<p class="text-muted">Gestión del catálogo de tipos de cuenta.</p>
 
-<p>Gestión del catálogo de tipos de cuenta.</p>
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="ShowCreateForm">
+        <span class="bi bi-plus-circle"></span> Nuevo Tipo de Cuenta
+    </button>
+</div>
+
+@if (showForm || isEditing || showDeleteConfirm)
+{
+    <div class="card mb-3">
+        <div class="card-header @(showForm ? "bg-primary text-white" : isEditing ? "bg-warning text-dark" : "bg-danger text-white")">
+            <h5 class="mb-0">@(showForm ? "Nuevo Tipo de Cuenta" : isEditing ? "Editar Tipo de Cuenta" : "Confirmar eliminación")</h5>
+        </div>
+        <div class="card-body">
+            @if (showForm || isEditing)
+            {
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" @bind="currentTipo.Nombre" />
+                </div>
+                <div class="mb-3">
+                    <label for="sobregiro" class="form-label">Sobregiro</label>
+                    <input type="number" step="0.01" class="form-control" id="sobregiro" @bind="currentTipo.Sobregiro" />
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn @(showForm ? "btn-success" : "btn-primary")" @onclick="SaveTipo">Guardar</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CancelAction">Cancelar</button>
+                </div>
+            }
+            else if (showDeleteConfirm)
+            {
+                <p>¿Está seguro de eliminar el tipo de cuenta <strong>@tipoToDelete?.Nombre</strong>?</p>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">Eliminar definitivamente</button>
+                    <button class="btn btn-secondary" @onclick="CancelAction">Cancelar</button>
+                </div>
+            }
+        </div>
+    </div>
+}
 
 @if (tipos == null)
 {
     <p><em>Cargando...</em></p>
 }
+else if (!tipos.Any())
+{
+    <div class="alert alert-info">
+        <strong>No hay tipos de cuenta registrados.</strong>
+    </div>
+}
 else
 {
-    <button class="btn btn-primary mb-3" @onclick="ShowCreateModal">Nuevo Tipo de Cuenta</button>
-
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var tipo in tipos)
-            {
-                <tr>
-                    <td>@tipo.IdTipoCuenta</td>
-                    <td>@tipo.Nombre</td>
-                    <td>
-                        <button class="btn btn-sm btn-secondary" @onclick="() => ShowEditModal(tipo)">Editar</button>
-                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteTipo(tipo)">Eliminar</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
-@if (showModal)
-{
-    <div class="modal fade show" style="display:block" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@(isEditing ? "Editar" : "Nuevo") Tipo de Cuenta</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombre" @bind="currentTipo.Nombre" />
+    <div class="row">
+        @foreach (var tipo in tipos)
+        {
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@tipo.Nombre</h5>
+                        <p class="card-text text-muted">ID: @tipo.IdTipoCuenta</p>
+                        @if (tipo.Sobregiro.HasValue)
+                        {
+                            <p class="card-text">Sobregiro: @tipo.Sobregiro.Value.ToString("C2")</p>
+                        }
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <button class="btn btn-sm btn-primary me-2" @onclick="() => ShowEditForm(tipo)">Editar</button>
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => ShowDeleteConfirm(tipo)">Eliminar</button>
+                            </div>
+                            <small class="text-muted">
+                                <span class="bi bi-wallet2"></span> Cuenta
+                            </small>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" @onclick="SaveTipo">Guardar</button>
-                </div>
             </div>
-        </div>
+        }
     </div>
-    <div class="modal-backdrop fade show"></div>
 }
 
 @code {
     private List<TipoCuenta>? tipos;
-    private bool showModal = false;
+    private bool showForm = false;
     private bool isEditing = false;
+    private bool showDeleteConfirm = false;
     private TipoCuentaCreate currentTipo = new();
     private int currentId = 0;
+    private TipoCuenta? tipoToDelete;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,25 +108,38 @@ else
         tipos = await CatalogoService.GetTiposCuentaAsync();
     }
 
-    private void ShowCreateModal()
+    private void ShowCreateForm()
     {
         currentTipo = new TipoCuentaCreate();
         currentId = 0;
+        showForm = true;
         isEditing = false;
-        showModal = true;
+        showDeleteConfirm = false;
     }
 
-    private void ShowEditModal(TipoCuenta tipo)
+    private void ShowEditForm(TipoCuenta tipo)
     {
-        currentTipo = new TipoCuentaCreate { Nombre = tipo.Nombre };
+        currentTipo = new TipoCuentaCreate { Nombre = tipo.Nombre, Sobregiro = tipo.Sobregiro };
         currentId = tipo.IdTipoCuenta;
+        showForm = false;
         isEditing = true;
-        showModal = true;
+        showDeleteConfirm = false;
     }
 
-    private void CloseModal()
+    private void ShowDeleteConfirm(TipoCuenta tipo)
     {
-        showModal = false;
+        tipoToDelete = tipo;
+        showForm = false;
+        isEditing = false;
+        showDeleteConfirm = true;
+    }
+
+    private void CancelAction()
+    {
+        showForm = false;
+        isEditing = false;
+        showDeleteConfirm = false;
+        tipoToDelete = null;
     }
 
     private async Task SaveTipo()
@@ -119,16 +156,17 @@ else
             await CatalogoService.CreateTipoCuentaAsync(currentTipo);
         }
 
-        showModal = false;
+        CancelAction();
         await LoadTipos();
     }
 
-    private async Task DeleteTipo(TipoCuenta tipo)
+    private async Task ConfirmDelete()
     {
-        if (await JS.InvokeAsync<bool>("confirm", $"¿Está seguro de eliminar el tipo de cuenta '{tipo.Nombre}'?"))
+        if (tipoToDelete != null)
         {
-            await CatalogoService.DeleteTipoCuentaAsync(tipo.IdTipoCuenta);
+            await CatalogoService.DeleteTipoCuentaAsync(tipoToDelete.IdTipoCuenta);
             await LoadTipos();
         }
+        CancelAction();
     }
 }

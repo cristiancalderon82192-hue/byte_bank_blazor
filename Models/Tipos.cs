@@ -78,12 +78,32 @@ namespace ByteBank.Models
     {
         [System.Text.Json.Serialization.JsonPropertyName("TipoCuenta")]
         public string Nombre { get; set; } = string.Empty;
+
+        [System.Text.Json.Serialization.JsonIgnore]
+        public decimal? Sobregiro { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Sobregiro")]
+        public string? SobregiroAlias
+        {
+            get => Sobregiro?.ToString("F2", CultureInfo.InvariantCulture);
+            set
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    if (decimal.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d))
+                        Sobregiro = d;
+                }
+            }
+        }
     }
 
     public class TipoDocumentoCreate
     {
         [System.Text.Json.Serialization.JsonPropertyName("TipoDocumento")]
         public string Nombre { get; set; } = string.Empty;
+
+        [System.Text.Json.Serialization.JsonPropertyName("Sigla")]
+        public string? Sigla { get; set; }
     }
 
     public class TipoMovimientoCreate
