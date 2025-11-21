@@ -4,7 +4,7 @@ namespace ByteBank.Models
     {
         public int IdMovimiento { get; set; }
         public int IdCuenta { get; set; }
-        public int IdSucursal { get; set; }
+        public int? IdSucursal { get; set; }
         public DateTime Fecha { get; set; }
         public decimal Valor { get; set; }
         public int IdTipoMovimiento { get; set; }

@@ -6,7 +6,7 @@ namespace ByteBank.Models
         public string Numero { get; set; } = string.Empty;
         public DateTime FechaApertura { get; set; }
         public int IdTipoCuenta { get; set; }
-        public int IdSucursal { get; set; }
+        public int? IdSucursal { get; set; }
         public decimal Saldo { get; set; }
         public decimal? Sobregiro { get; set; }
         public bool? GranMovimiento { get; set; }

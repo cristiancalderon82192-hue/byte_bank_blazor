@@ -1824,11 +1824,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\Projects\\Proyectos Python\\byte_bank\\byte_bank_blazor\\byte_bank_blazor.csproj",
+      "projectUniqueName": "D:\\Projects\\C-Sharp\\byte_bank_blazor\\byte_bank_blazor.csproj",
       "projectName": "byte_bank_blazor",
-      "projectPath": "d:\\Projects\\Proyectos Python\\byte_bank\\byte_bank_blazor\\byte_bank_blazor.csproj",
+      "projectPath": "D:\\Projects\\C-Sharp\\byte_bank_blazor\\byte_bank_blazor.csproj",
       "packagesPath": "C:\\Users\\digim\\.nuget\\packages\\",
-      "outputPath": "d:\\Projects\\Proyectos Python\\byte_bank\\byte_bank_blazor\\obj\\",
+      "outputPath": "D:\\Projects\\C-Sharp\\byte_bank_blazor\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

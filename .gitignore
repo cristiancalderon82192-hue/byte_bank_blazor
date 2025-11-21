@@ -190,3 +190,6 @@ wwwroot/service-worker-assets.js
 bin/*
 obj/*
 obj/Debug/net9.0/*
+
+# scripts output
+scripts/test_cors.ps1
