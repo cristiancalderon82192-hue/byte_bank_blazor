@@ -78,7 +78,7 @@ namespace ByteBank.Services
                     Valor = calculo.Valor,
                     Interes = calculo.Interes,
                     Plazo = calculo.Plazo,
-                    Seguro = calculo.Seguro.HasValue ? calculo.Seguro.Value.ToString("F2") : "0.00"
+                    Seguro = calculo.Seguro ?? 0m
                 };
 
                 var options = new JsonSerializerOptions { PropertyNamingPolicy = null, NumberHandling = JsonNumberHandling.AllowReadingFromString };
@@ -117,7 +117,7 @@ namespace ByteBank.Services
                     Valor = prestamo.Valor,
                     Interes = prestamo.Interes,
                     Plazo = prestamo.Plazo,
-                    Seguro = prestamo.Seguro.HasValue ? prestamo.Seguro.Value.ToString("F2") : "0.00",
+                    Seguro = prestamo.Seguro ?? 0m,
                     Cuota = prestamo.Cuota
                 };
 
@@ -151,7 +151,7 @@ namespace ByteBank.Services
                 {
                     Interes = prestamo.Interes,
                     Plazo = prestamo.Plazo,
-                    Seguro = prestamo.Seguro.HasValue ? prestamo.Seguro.Value.ToString("F2") : "0.00",
+                    Seguro = prestamo.Seguro ?? 0m,
                     Cuota = prestamo.Cuota
                 };
 

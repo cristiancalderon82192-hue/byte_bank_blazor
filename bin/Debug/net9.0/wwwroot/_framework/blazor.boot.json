@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "byte_bank_blazor",
   "resources": {
-    "hash": "sha256-RjUnLEHl2OlC49wvNhkoBv5nKxUsykMVhP1Uc8+TvLc=",
+    "hash": "sha256-s56qPWdlXqLWQFfGFtmp0+vCJvrxvNhk7reE2ZLk9Sk=",
     "fingerprinting": {
       "Microsoft.AspNetCore.Authorization.50odlujk1g.wasm": "Microsoft.AspNetCore.Authorization.wasm",
       "Microsoft.AspNetCore.Components.nxuc56wpt2.wasm": "Microsoft.AspNetCore.Components.wasm",
@@ -201,8 +201,8 @@
       "icudt_CJK.tjcz0u77k5.dat": "icudt_CJK.dat",
       "icudt_EFIGS.tptq2av103.dat": "icudt_EFIGS.dat",
       "icudt_no_CJK.lfu7j35m59.dat": "icudt_no_CJK.dat",
-      "byte_bank_blazor.i28d0u7yyt.wasm": "byte_bank_blazor.wasm",
-      "byte_bank_blazor.m5mz08h9lb.pdb": "byte_bank_blazor.pdb"
+      "byte_bank_blazor.3or85t8dqf.wasm": "byte_bank_blazor.wasm",
+      "byte_bank_blazor.o7a2sf6wk2.pdb": "byte_bank_blazor.pdb"
     },
     "jsModuleNative": {
       "dotnet.native.l4ptthxatg.js": "sha256-ddUN4+taa/Qv7Mr8mLpunJO+0Xw3ViOqBvedhe57/hA="
@@ -412,10 +412,10 @@
       "WindowsBase.ahs9krftg4.wasm": "sha256-bgi2FHdT0ABsUP1yKQQ2AP8qfo1V/bS/4cJFE4OUHX8=",
       "mscorlib.k5iaovx9v7.wasm": "sha256-mEFLDERlY1HMNQHzh68xOPawXvI48O1fHW9PbfXugb4=",
       "netstandard.6sr1qvn64m.wasm": "sha256-Gpf+qEqCYaCB6zqI5sNPIurnfpwRtfcWksgf3CW6mHE=",
-      "byte_bank_blazor.i28d0u7yyt.wasm": "sha256-5m1jD1w/+0LAYrluXcXUlsYKSw4580oKZ6mrLpxoT1s="
+      "byte_bank_blazor.3or85t8dqf.wasm": "sha256-E7fS36VhVm9nElmlZScRphN+QxbcGj1+G0a5liR4UaI="
     },
     "pdb": {
-      "byte_bank_blazor.m5mz08h9lb.pdb": "sha256-FjWgnDCuDui2Kzo/AN6TrVgWK3TjOnxSTRBmlc8KHQA="
+      "byte_bank_blazor.o7a2sf6wk2.pdb": "sha256-NDgN1eUfJtxvPNc3/HiMRubFF8EKMW6MOuI88+0EkI8="
     }
   },
   "cacheBootResources": true,
