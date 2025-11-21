@@ -90,6 +90,53 @@ namespace ByteBank.Services
             }
         }
 
+        public async Task<TipoCuenta?> CreateTipoCuentaAsync(TipoCuentaCreate tipoCuenta)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/tipos/cuenta", tipoCuenta);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<TipoCuenta>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al crear tipo de cuenta: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<TipoCuenta?> UpdateTipoCuentaAsync(int id, TipoCuentaCreate tipoCuenta)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/tipos/cuenta/{id}", tipoCuenta);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<TipoCuenta>();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al actualizar tipo de cuenta: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<bool> DeleteTipoCuentaAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{ApiBasePath}/tipos/cuenta/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar tipo de cuenta: {ex.Message}");
+                return false;
+            }
+        }
+
         // Tipos de Documento
         public async Task<List<TipoDocumento>?> GetTiposDocumentoAsync()
         {
@@ -104,6 +151,53 @@ namespace ByteBank.Services
             }
         }
 
+        public async Task<TipoDocumento?> CreateTipoDocumentoAsync(TipoDocumentoCreate tipoDocumento)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/tipos/documento", tipoDocumento);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<TipoDocumento>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al crear tipo de documento: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<TipoDocumento?> UpdateTipoDocumentoAsync(int id, TipoDocumentoCreate tipoDocumento)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/tipos/documento/{id}", tipoDocumento);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<TipoDocumento>();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al actualizar tipo de documento: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<bool> DeleteTipoDocumentoAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{ApiBasePath}/tipos/documento/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar tipo de documento: {ex.Message}");
+                return false;
+            }
+        }
+
         // Tipos de Movimiento
         public async Task<List<TipoMovimiento>?> GetTiposMovimientoAsync()
         {
@@ -115,6 +209,53 @@ namespace ByteBank.Services
             {
                 Console.WriteLine($"Error al obtener tipos de movimiento: {ex.Message}");
                 return null;
+            }
+        }
+
+        public async Task<TipoMovimiento?> CreateTipoMovimientoAsync(TipoMovimientoCreate tipoMovimiento)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/tipos/movimiento", tipoMovimiento);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<TipoMovimiento>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al crear tipo de movimiento: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<TipoMovimiento?> UpdateTipoMovimientoAsync(int id, TipoMovimientoCreate tipoMovimiento)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/tipos/movimiento/{id}", tipoMovimiento);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<TipoMovimiento>();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al actualizar tipo de movimiento: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<bool> DeleteTipoMovimientoAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{ApiBasePath}/tipos/movimiento/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar tipo de movimiento: {ex.Message}");
+                return false;
             }
         }
 

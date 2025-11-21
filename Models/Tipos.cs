@@ -73,4 +73,22 @@ namespace ByteBank.Models
             }
         }
     }
+
+    public class TipoCuentaCreate
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("TipoCuenta")]
+        public string Nombre { get; set; } = string.Empty;
+    }
+
+    public class TipoDocumentoCreate
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("TipoDocumento")]
+        public string Nombre { get; set; } = string.Empty;
+    }
+
+    public class TipoMovimientoCreate
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("TipoMovimiento")]
+        public string Nombre { get; set; } = string.Empty;
+    }
 }

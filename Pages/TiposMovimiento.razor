@@ -1,0 +1,134 @@
+@page "/tipos-movimiento"
+@using ByteBank.Models
+@using ByteBank.Services
+@inject CatalogoService CatalogoService
+@inject IJSRuntime JS
+
+<PageTitle>Tipos de Movimiento</PageTitle>
+
+<h1>Tipos de Movimiento</h1>
+
+<p>Gestión del catálogo de tipos de movimiento.</p>
+
+@if (tipos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <button class="btn btn-primary mb-3" @onclick="ShowCreateModal">Nuevo Tipo de Movimiento</button>
+
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tipo in tipos)
+            {
+                <tr>
+                    <td>@tipo.IdTipoMovimiento</td>
+                    <td>@tipo.Nombre</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" @onclick="() => ShowEditModal(tipo)">Editar</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteTipo(tipo)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (showModal)
+{
+    <div class="modal fade show" style="display:block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(isEditing ? "Editar" : "Nuevo") Tipo de Movimiento</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" @bind="currentTipo.Nombre" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveTipo">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private List<TipoMovimiento>? tipos;
+    private bool showModal = false;
+    private bool isEditing = false;
+    private TipoMovimientoCreate currentTipo = new();
+    private int currentId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTipos();
+    }
+
+    private async Task LoadTipos()
+    {
+        tipos = await CatalogoService.GetTiposMovimientoAsync();
+    }
+
+    private void ShowCreateModal()
+    {
+        currentTipo = new TipoMovimientoCreate();
+        currentId = 0;
+        isEditing = false;
+        showModal = true;
+    }
+
+    private void ShowEditModal(TipoMovimiento tipo)
+    {
+        currentTipo = new TipoMovimientoCreate { Nombre = tipo.Nombre };
+        currentId = tipo.IdTipoMovimiento;
+        isEditing = true;
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+    private async Task SaveTipo()
+    {
+        if (string.IsNullOrWhiteSpace(currentTipo.Nombre))
+            return;
+
+        if (isEditing)
+        {
+            await CatalogoService.UpdateTipoMovimientoAsync(currentId, currentTipo);
+        }
+        else
+        {
+            await CatalogoService.CreateTipoMovimientoAsync(currentTipo);
+        }
+
+        showModal = false;
+        await LoadTipos();
+    }
+
+    private async Task DeleteTipo(TipoMovimiento tipo)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", $"¿Está seguro de eliminar el tipo de movimiento '{tipo.Nombre}'?"))
+        {
+            await CatalogoService.DeleteTipoMovimientoAsync(tipo.IdTipoMovimiento);
+            await LoadTipos();
+        }
+    }
+}
