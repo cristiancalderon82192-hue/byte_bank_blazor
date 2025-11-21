@@ -1,5 +1,6 @@
 @page "/titulares"
 @using ByteBank.Services
+@using ByteBank.Models
 @inject TitularService TitularService
 
 <PageTitle>Gestión de Titulares</PageTitle>
@@ -68,11 +69,33 @@
                         </button>
                     </div>
                 </div>
-                @if (resultadoTitulares != null)
+                @if (listaTitulares != null && listaTitulares.Any())
                 {
-                    <div class="alert alert-info">
-                        <pre>@resultadoTitulares</pre>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID Cuentahabiente</th>
+                                    <th>Nombre</th>
+                                    <th>Documento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var titular in listaTitulares)
+                                {
+                                    <tr>
+                                        <td>@titular.IdCuentahabiente</td>
+                                        <td>@titular.Nombre</td>
+                                        <td>@titular.Documento</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
+                }
+                else if (listaTitulares != null)
+                {
+                     <div class="alert alert-warning p-2">No se encontraron titulares.</div>
                 }
             </div>
         </div>
@@ -94,11 +117,33 @@
                         </button>
                     </div>
                 </div>
-                @if (resultadoCuentas != null)
+                @if (listaCuentas != null && listaCuentas.Any())
                 {
-                    <div class="alert alert-warning">
-                        <pre>@resultadoCuentas</pre>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID Cuenta</th>
+                                    <th>Número</th>
+                                    <th>Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cuenta in listaCuentas)
+                                {
+                                    <tr>
+                                        <td>@cuenta.IdCuenta</td>
+                                        <td>@cuenta.Numero</td>
+                                        <td>@cuenta.Saldo.ToString("C2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
+                }
+                else if (listaCuentas != null)
+                {
+                    <div class="alert alert-warning p-2">No se encontraron cuentas.</div>
                 }
             </div>
         </div>
@@ -130,8 +175,10 @@
     private int idCuentahabienteRemover;
     private int idCuentaConsultar;
     private int idCuentahabienteConsultar;
-    private string? resultadoTitulares;
-    private string? resultadoCuentas;
+    
+    private List<Cuentahabiente>? listaTitulares;
+    private List<Cuenta>? listaCuentas;
+    
     private string? mensaje;
     private bool esError;
 
@@ -171,33 +218,41 @@
 
     private async Task ConsultarTitulares()
     {
-        var resultado = await TitularService.GetTitularesByCuentaAsync(idCuentaConsultar);
-        if (resultado != null)
+        listaTitulares = await TitularService.GetTitularesByCuentaAsync(idCuentaConsultar);
+        if (listaTitulares != null)
         {
-            resultadoTitulares = System.Text.Json.JsonSerializer.Serialize(resultado, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             mensaje = null;
+            if (!listaTitulares.Any())
+            {
+                 mensaje = $"No se encontraron titulares para la cuenta {idCuentaConsultar}";
+                 esError = true; // Or just warning
+            }
         }
         else
         {
-            mensaje = $"No se encontraron titulares para la cuenta {idCuentaConsultar}";
+            mensaje = $"Error al consultar titulares para la cuenta {idCuentaConsultar}";
             esError = true;
-            resultadoTitulares = null;
+            listaTitulares = null;
         }
     }
 
     private async Task ConsultarCuentas()
     {
-        var resultado = await TitularService.GetCuentasByCuentahabienteAsync(idCuentahabienteConsultar);
-        if (resultado != null)
+        listaCuentas = await TitularService.GetCuentasByCuentahabienteAsync(idCuentahabienteConsultar);
+        if (listaCuentas != null)
         {
-            resultadoCuentas = System.Text.Json.JsonSerializer.Serialize(resultado, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             mensaje = null;
+            if (!listaCuentas.Any())
+            {
+                 mensaje = $"No se encontraron cuentas para el cuentahabiente {idCuentahabienteConsultar}";
+                 esError = true;
+            }
         }
         else
         {
-            mensaje = $"No se encontraron cuentas para el cuentahabiente {idCuentahabienteConsultar}";
+            mensaje = $"Error al consultar cuentas para el cuentahabiente {idCuentahabienteConsultar}";
             esError = true;
-            resultadoCuentas = null;
+            listaCuentas = null;
         }
     }
 }

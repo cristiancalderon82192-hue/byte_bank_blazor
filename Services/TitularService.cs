@@ -1,4 +1,6 @@
 using System.Net.Http.Json;
+using ByteBank.Models;
+using System.Text.Json;
 
 namespace ByteBank.Services
 {
@@ -12,11 +14,12 @@ namespace ByteBank.Services
             _httpClient = httpClient;
         }
 
-        public async Task<object?> GetTitularesByCuentaAsync(int idCuenta)
+        public async Task<List<Cuentahabiente>?> GetTitularesByCuentaAsync(int idCuenta)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<object>($"{ApiBasePath}/cuenta/{idCuenta}");
+                var response = await _httpClient.GetFromJsonAsync<TitularesResponse>($"{ApiBasePath}/cuenta/{idCuenta}");
+                return response?.Titulares;
             }
             catch (Exception ex)
             {
@@ -25,11 +28,12 @@ namespace ByteBank.Services
             }
         }
 
-        public async Task<object?> GetCuentasByCuentahabienteAsync(int idCuentahabiente)
+        public async Task<List<Cuenta>?> GetCuentasByCuentahabienteAsync(int idCuentahabiente)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<object>($"{ApiBasePath}/cuentahabiente/{idCuentahabiente}");
+                var response = await _httpClient.GetFromJsonAsync<CuentasResponse>($"{ApiBasePath}/cuentahabiente/{idCuentahabiente}");
+                return response?.Cuentas;
             }
             catch (Exception ex)
             {
@@ -65,6 +69,21 @@ namespace ByteBank.Services
                 Console.WriteLine($"Error al remover titular: {ex.Message}");
                 return false;
             }
+        }
+
+        // DTOs para la respuesta de la API
+        private class TitularesResponse
+        {
+            public int IdCuenta { get; set; }
+            public int TotalTitulares { get; set; }
+            public List<Cuentahabiente> Titulares { get; set; } = new();
+        }
+
+        private class CuentasResponse
+        {
+            public int IdCuentahabiente { get; set; }
+            public int TotalCuentas { get; set; }
+            public List<Cuenta> Cuentas { get; set; } = new();
         }
     }
 }
