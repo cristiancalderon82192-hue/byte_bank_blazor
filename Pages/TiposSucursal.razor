@@ -1,0 +1,172 @@
+@page "/tipos-sucursal"
+@using ByteBank.Models
+@using ByteBank.Services
+@inject CatalogoService CatalogoService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Tipos de Sucursal</PageTitle>
+
+<h1>Gestión de Tipos de Sucursal</h1>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="ShowCreateForm">
+        <span class="bi bi-plus-circle"></span> Nuevo Tipo de Sucursal
+    </button>
+</div>
+
+@if (showForm)
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>@(isEditing ? "Editar Tipo de Sucursal" : "Nuevo Tipo de Sucursal")</h5>
+        </div>
+        <div class="card-body">
+            <EditForm Model="@currentTipo" OnValidSubmit="SaveTipo">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <InputText id="nombre" class="form-control" @bind-Value="currentTipo.Nombre" />
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-secondary" @onclick="CancelForm">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (showDeleteConfirmation)
+{
+    <div class="card mb-4 border-danger">
+        <div class="card-header bg-danger text-white">
+            <h5>Confirmar Eliminación</h5>
+        </div>
+        <div class="card-body">
+            <p>¿Está seguro que desea eliminar el tipo de sucursal <strong>@tipoToDelete?.Nombre</strong>?</p>
+            <div class="d-flex gap-2">
+                <button class="btn btn-danger" @onclick="ConfirmDelete">Eliminar</button>
+                <button class="btn btn-secondary" @onclick="CancelDelete">Cancelar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (tipos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else if (!tipos.Any())
+{
+    <div class="alert alert-info">No hay tipos de sucursal registrados.</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var tipo in tipos)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@tipo.Nombre</h5>
+                        <p class="card-text text-muted">ID: @tipo.IdTipoSucursal</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end gap-2">
+                        <button class="btn btn-outline-primary btn-sm" @onclick="() => ShowEditForm(tipo)">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" @onclick="() => ShowDeleteConfirmation(tipo)">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<TipoSucursal>? tipos;
+    private TipoSucursalCreate currentTipo = new();
+    private TipoSucursal? tipoToDelete;
+    private bool showForm = false;
+    private bool isEditing = false;
+    private bool showDeleteConfirmation = false;
+    private int editingId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTipos();
+    }
+
+    private async Task LoadTipos()
+    {
+        tipos = await CatalogoService.GetTiposSucursalAsync();
+    }
+
+    private void ShowCreateForm()
+    {
+        currentTipo = new();
+        isEditing = false;
+        showForm = true;
+        showDeleteConfirmation = false;
+    }
+
+    private void ShowEditForm(TipoSucursal tipo)
+    {
+        currentTipo = new TipoSucursalCreate
+        {
+            Nombre = tipo.Nombre
+        };
+        editingId = tipo.IdTipoSucursal;
+        isEditing = true;
+        showForm = true;
+        showDeleteConfirmation = false;
+    }
+
+    private void CancelForm()
+    {
+        showForm = false;
+        currentTipo = new();
+    }
+
+    private async Task SaveTipo()
+    {
+        if (isEditing)
+        {
+            await CatalogoService.UpdateTipoSucursalAsync(editingId, currentTipo);
+        }
+        else
+        {
+            await CatalogoService.CreateTipoSucursalAsync(currentTipo);
+        }
+
+        showForm = false;
+        await LoadTipos();
+    }
+
+    private void ShowDeleteConfirmation(TipoSucursal tipo)
+    {
+        tipoToDelete = tipo;
+        showDeleteConfirmation = true;
+        showForm = false;
+    }
+
+    private void CancelDelete()
+    {
+        showDeleteConfirmation = false;
+        tipoToDelete = null;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (tipoToDelete != null)
+        {
+            await CatalogoService.DeleteTipoSucursalAsync(tipoToDelete.IdTipoSucursal);
+            showDeleteConfirmation = false;
+            tipoToDelete = null;
+            await LoadTipos();
+        }
+    }
+}

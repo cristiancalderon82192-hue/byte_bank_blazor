@@ -273,6 +273,53 @@ namespace ByteBank.Services
             }
         }
 
+        public async Task<TipoSucursal?> CreateTipoSucursalAsync(TipoSucursalCreate tipoSucursal)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"{ApiBasePath}/tipos/sucursal", tipoSucursal);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<TipoSucursal>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al crear tipo de sucursal: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<TipoSucursal?> UpdateTipoSucursalAsync(int id, TipoSucursalCreate tipoSucursal)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"{ApiBasePath}/tipos/sucursal/{id}", tipoSucursal);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<TipoSucursal>();
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al actualizar tipo de sucursal: {ex.Message}");
+                return null;
+            }
+        }
+
+        public async Task<bool> DeleteTipoSucursalAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"{ApiBasePath}/tipos/sucursal/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al eliminar tipo de sucursal: {ex.Message}");
+                return false;
+            }
+        }
+
         // Sucursales
         public async Task<List<Sucursal>?> GetSucursalesAsync()
         {

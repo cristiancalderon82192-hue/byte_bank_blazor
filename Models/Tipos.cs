@@ -111,4 +111,10 @@ namespace ByteBank.Models
         [System.Text.Json.Serialization.JsonPropertyName("TipoMovimiento")]
         public string Nombre { get; set; } = string.Empty;
     }
+
+    public class TipoSucursalCreate
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("TipoSucursal")]
+        public string Nombre { get; set; } = string.Empty;
+    }
 }
