@@ -14,45 +14,6 @@
     </button>
 </div>
 
-@if (showForm)
-{
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>@(isEditing ? "Editar Tipo de Sucursal" : "Nuevo Tipo de Sucursal")</h5>
-        </div>
-        <div class="card-body">
-            <EditForm Model="@currentTipo" OnValidSubmit="SaveTipo">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-                <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre:</label>
-                    <InputText id="nombre" class="form-control" @bind-Value="currentTipo.Nombre" />
-                </div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">Guardar</button>
-                    <button type="button" class="btn btn-secondary" @onclick="CancelForm">Cancelar</button>
-                </div>
-            </EditForm>
-        </div>
-    </div>
-}
-
-@if (showDeleteConfirmation)
-{
-    <div class="card mb-4 border-danger">
-        <div class="card-header bg-danger text-white">
-            <h5>Confirmar Eliminación</h5>
-        </div>
-        <div class="card-body">
-            <p>¿Está seguro que desea eliminar el tipo de sucursal <strong>@tipoToDelete?.Nombre</strong>?</p>
-            <div class="d-flex gap-2">
-                <button class="btn btn-danger" @onclick="ConfirmDelete">Eliminar</button>
-                <button class="btn btn-secondary" @onclick="CancelDelete">Cancelar</button>
-            </div>
-        </div>
-    </div>
-}
-
 @if (tipos == null)
 {
     <p><em>Cargando...</em></p>
@@ -83,6 +44,57 @@ else
                 </div>
             </div>
         }
+    </div>
+}
+
+<!-- Modal Crear/Editar -->
+@if (showForm)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(isEditing ? "Editar Tipo de Sucursal" : "Nuevo Tipo de Sucursal")</h5>
+                    <button type="button" class="btn-close" @onclick="CancelForm"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@currentTipo" OnValidSubmit="SaveTipo">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre:</label>
+                            <InputText id="nombre" class="form-control" @bind-Value="currentTipo.Nombre" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CancelForm">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Confirmar Eliminación -->
+@if (showDeleteConfirmation)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CancelDelete"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea eliminar el tipo de sucursal <strong>@tipoToDelete?.Nombre</strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="ConfirmDelete">Eliminar</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
