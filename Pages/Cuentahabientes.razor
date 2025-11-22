@@ -1,7 +1,6 @@
 @page "/cuentahabientes"
 @using ByteBank.Models
 @using ByteBank.Services
-@using Microsoft.AspNetCore.Components.Web
 @inject CuentahabienteService CuentahabienteService
 @inject CatalogoService CatalogoService
 
@@ -42,187 +41,38 @@
     </div>
 </div>
 
-@if (mostrarFormulario)
-{
-    <div class="card mb-3">
-        <div class="card-header">
-            <h5>@(esModoEdicion ? "Editar Cuentahabiente" : "Nuevo Cuentahabiente")</h5>
-        </div>
-        <div class="card-body">
-            <EditForm Model="@nuevoCuentahabiente" OnValidSubmit="CrearCuentahabiente">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Nombre:</label>
-                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Nombre" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Tipo Documento:</label>
-                        @if (tiposDocumento == null)
-                        {
-                            <div class="form-select"><em>Cargando tipos de documento...</em></div>
-                        }
-                        else if (!tiposDocumento.Any())
-                        {
-                            <div class="form-select text-danger"><em>No hay tipos de documento disponibles</em></div>
-                        }
-                        else
-                        {
-                            <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdTipoDocumento" TValue="int">
-                                <option value="0">Seleccionar...</option>
-                                @foreach (var tipo in tiposDocumento)
-                                {
-                                    <option value="@tipo.IdTipoDocumento">@((!string.IsNullOrWhiteSpace(tipo.Nombre) ? tipo.Nombre : (!string.IsNullOrWhiteSpace(tipo.Sigla) ? tipo.Sigla : $"ID: {tipo.IdTipoDocumento}")))</option>
-                                }
-                            </InputSelect>
-                            @if (tiposDocumento.Count == 0)
-                            {
-                                <small class="text-muted">No hay tipos de documento disponibles. Por favor, créelos primero en la sección de Catálogos.</small>
-                            }
-                        }
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Documento:</label>
-                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Documento" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Dirección:</label>
-                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Direccion" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Teléfono:</label>
-                        <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Telefono" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Ciudad:</label>
-                        @if (ciudades == null)
-                        {
-                            <div class="form-select"><em>Cargando ciudades...</em></div>
-                        }
-                        else if (!ciudades.Any())
-                        {
-                            <div class="form-select text-danger"><em>No hay ciudades disponibles</em></div>
-                        }
-                        else
-                        {
-                            <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdCiudad" TValue="int">
-                                <option value="0">Seleccionar...</option>
-                                @foreach (var ciudad in ciudades)
-                                {
-                                    <option value="@ciudad.IdCiudad">@((!string.IsNullOrWhiteSpace(ciudad.Nombre) ? ciudad.Nombre : $"ID: {ciudad.IdCiudad}"))</option>
-                                }
-                            </InputSelect>
-                            @if (ciudades.Count == 0)
-                            {
-                                <small class="text-muted">No hay ciudades disponibles. Por favor, créelas primero en la sección de Ciudades.</small>
-                            }
-                        }
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Clave:</label>
-                        @if (esModoEdicion)
-                        {
-                            <div class="mb-2"><small class="text-info">Al editar un cuentahabiente, se debe ingresar también la clave.</small></div>
-                        }
-                        <InputText type="password" class="form-control" @bind-Value="nuevoCuentahabiente.Clave" />
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">
-                        @(esModoEdicion ? "Actualizar" : "Guardar")
-                    </button>
-                    <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">
-                        Cancelar
-                    </button>
-                </div>
-            </EditForm>
-        </div>
-    </div>
-}
-
-
 @if (cuentahabientes == null)
-
 {
-
-    
-<p><em>Cargando cuentahabientes...</em></p>
-
+    <p><em>Cargando cuentahabientes...</em></p>
 }
-
 else if (!cuentahabientes.Any())
-
 {
-
-    
-<div class="alert alert-info">
+    <div class="alert alert-info">
         <strong>No hay cuentahabientes registrados.</strong>
     </div>
-
 }
-
 else
-
 {
-
-    
     <div class="mb-3">
         <strong>Total de cuentahabientes:</strong> @cuentahabientes.Count
     </div>
 
-
-    
-<table class="table table-striped table-hover">
-
-        
-<thead class="table-dark">
-
-            
-<tr>
-
-                
-<th>ID</th>
-
-                
-<th>Nombre</th>
-
-                
-<th>Tipo Documento</th>
-
-                
-<th>Documento</th>
-
-                
-<th>Teléfono</th>
-
-                
-<th>Ciudad</th>
-
-                
-<th>Dirección</th>
-
-                
-<th>Acciones</th>
-
-            
-</tr>
-
-        
-</thead>
-
-        
-<tbody>
-
-            
-@foreach (var cuentahabiente in cuentahabientes)
-
-            
-{
-
-                
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Tipo Documento</th>
+                <th>Documento</th>
+                <th>Teléfono</th>
+                <th>Ciudad</th>
+                <th>Dirección</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cuentahabiente in cuentahabientes)
+            {
                 <tr>
                     <td>@cuentahabiente.IdCuentahabiente</td>
                     <td><strong>@cuentahabiente.Nombre</strong></td>
@@ -254,7 +104,7 @@ else
                             <button class="btn btn-sm btn-primary me-2" @onclick="() => MostrarFormularioEditar(cuentahabiente.IdCuentahabiente)">
                                 <span class="bi bi-pencil"></span> Editar
                             </button>
-                            <button class="btn btn-sm btn-danger" @onclick="() => EliminarCuentahabiente(cuentahabiente.IdCuentahabiente)">
+                            <button class="btn btn-sm btn-danger" @onclick="() => SolicitarEliminar(cuentahabiente.IdCuentahabiente)">
                                 <span class="bi bi-trash"></span> Eliminar
                             </button>
                         </div>
@@ -263,22 +113,141 @@ else
             }
         </tbody>
     </table>
-
 }
 
-
 @if (mensaje != null)
-
 {
-
-    
-<div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show mt-3" role="alert">
         @mensaje
         <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
     </div>
-
 }
 
+<!-- Modal Crear/Editar -->
+@if (mostrarFormulario)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(esModoEdicion ? "Editar Cuentahabiente" : "Nuevo Cuentahabiente")</h5>
+                    <button type="button" class="btn-close" @onclick="CancelarFormulario"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@nuevoCuentahabiente" OnValidSubmit="CrearCuentahabiente">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Nombre:</label>
+                                <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Nombre" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Tipo Documento:</label>
+                                @if (tiposDocumento == null)
+                                {
+                                    <div class="form-select"><em>Cargando tipos de documento...</em></div>
+                                }
+                                else if (!tiposDocumento.Any())
+                                {
+                                    <div class="form-select text-danger"><em>No hay tipos de documento disponibles</em></div>
+                                }
+                                else
+                                {
+                                    <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdTipoDocumento" TValue="int">
+                                        <option value="0">Seleccionar...</option>
+                                        @foreach (var tipo in tiposDocumento)
+                                        {
+                                            <option value="@tipo.IdTipoDocumento">@((!string.IsNullOrWhiteSpace(tipo.Nombre) ? tipo.Nombre : (!string.IsNullOrWhiteSpace(tipo.Sigla) ? tipo.Sigla : $"ID: {tipo.IdTipoDocumento}")))</option>
+                                        }
+                                    </InputSelect>
+                                    @if (tiposDocumento.Count == 0)
+                                    {
+                                        <small class="text-muted">No hay tipos de documento disponibles. Por favor, créelos primero en la sección de Catálogos.</small>
+                                    }
+                                }
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Documento:</label>
+                                <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Documento" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Dirección:</label>
+                                <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Direccion" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Teléfono:</label>
+                                <InputText class="form-control" @bind-Value="nuevoCuentahabiente.Telefono" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Ciudad:</label>
+                                @if (ciudades == null)
+                                {
+                                    <div class="form-select"><em>Cargando ciudades...</em></div>
+                                }
+                                else if (!ciudades.Any())
+                                {
+                                    <div class="form-select text-danger"><em>No hay ciudades disponibles</em></div>
+                                }
+                                else
+                                {
+                                    <InputSelect class="form-select" @bind-Value="nuevoCuentahabiente.IdCiudad" TValue="int">
+                                        <option value="0">Seleccionar...</option>
+                                        @foreach (var ciudad in ciudades)
+                                        {
+                                            <option value="@ciudad.IdCiudad">@((!string.IsNullOrWhiteSpace(ciudad.Nombre) ? ciudad.Nombre : $"ID: {ciudad.IdCiudad}"))</option>
+                                        }
+                                    </InputSelect>
+                                    @if (ciudades.Count == 0)
+                                    {
+                                        <small class="text-muted">No hay ciudades disponibles. Por favor, créelas primero en la sección de Ciudades.</small>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Clave:</label>
+                                @if (esModoEdicion)
+                                {
+                                    <div class="mb-2"><small class="text-info">Al editar un cuentahabiente, se debe ingresar también la clave.</small></div>
+                                }
+                                <InputText type="password" class="form-control" @bind-Value="nuevoCuentahabiente.Clave" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
+                            <button type="submit" class="btn btn-success">@(esModoEdicion ? "Actualizar" : "Guardar")</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Confirmar Eliminación -->
+@if (mostrarConfirmEliminar && cuentahabienteAEliminarId.HasValue)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CancelarEliminar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea eliminar el cuentahabiente #<strong>@cuentahabienteAEliminarId</strong>?</p>
+                    <p class="text-muted">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelarEliminar">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="ConfirmarEliminar">Eliminar definitivamente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private List<Cuentahabiente>? cuentahabientes;
@@ -297,6 +266,10 @@ else
     private bool mostrarFormulario = false;
     private bool esModoEdicion = false;
     private int? idCuentahabienteEditar = null;
+    
+    private bool mostrarConfirmEliminar = false;
+    private int? cuentahabienteAEliminarId;
+
     private string? mensaje;
     private bool esError;
     private string busqueda = string.Empty;
@@ -346,6 +319,7 @@ else
             Clave = string.Empty
         };
         mostrarFormulario = true;
+        mensaje = null;
         StateHasChanged();
     }
 
@@ -430,6 +404,7 @@ else
             idCuentahabienteEditar = id;
             esModoEdicion = true;
             mostrarFormulario = true;
+            mensaje = null;
             StateHasChanged();
         }
         else
@@ -511,9 +486,24 @@ else
         }
     }
 
-    private async Task EliminarCuentahabiente(int id)
+    private void SolicitarEliminar(int id)
     {
-        var exito = await CuentahabienteService.DeleteCuentahabienteAsync(id);
+        cuentahabienteAEliminarId = id;
+        mostrarConfirmEliminar = true;
+        mensaje = null;
+    }
+
+    private void CancelarEliminar()
+    {
+        mostrarConfirmEliminar = false;
+        cuentahabienteAEliminarId = null;
+    }
+
+    private async Task ConfirmarEliminar()
+    {
+        if (!cuentahabienteAEliminarId.HasValue) return;
+
+        var exito = await CuentahabienteService.DeleteCuentahabienteAsync(cuentahabienteAEliminarId.Value);
         if (exito)
         {
             mensaje = "Cuentahabiente eliminado exitosamente";
@@ -525,6 +515,6 @@ else
             mensaje = "Error al eliminar el cuentahabiente";
             esError = true;
         }
+        CancelarEliminar();
     }
-}
 }

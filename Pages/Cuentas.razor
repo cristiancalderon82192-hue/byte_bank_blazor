@@ -7,6 +7,12 @@
 
 <h1>Cuentas Bancarias</h1>
 
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="MostrarFormularioCrear">
+        <span class="bi bi-plus-circle"></span> Nueva Cuenta
+    </button>
+</div>
+
 @if (cuentas == null)
 {
     <p><em>Cargando cuentas...</em></p>
@@ -55,10 +61,10 @@ else
                         }
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-primary" @onclick="() => VerDetalle(cuenta.IdCuenta)">
-                            Ver Detalle
+                        <button class="btn btn-sm btn-primary me-1" @onclick="() => EditarCuenta(cuenta)">
+                            Editar
                         </button>
-                        <button class="btn btn-sm btn-danger" @onclick="() => EliminarCuenta(cuenta.IdCuenta)">
+                        <button class="btn btn-sm btn-danger" @onclick="() => SolicitarEliminar(cuenta.IdCuenta)">
                             Eliminar
                         </button>
                     </td>
@@ -70,14 +76,92 @@ else
 
 @if (mensaje != null)
 {
-    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show mt-3" role="alert">
         @mensaje
         <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
     </div>
 }
 
+<!-- Modal Crear/Editar -->
+@if (mostrarFormulario)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(editingId.HasValue ? "Editar Cuenta" : "Nueva Cuenta")</h5>
+                    <button type="button" class="btn-close" @onclick="CancelarFormulario"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@nuevaCuenta" OnValidSubmit="GuardarCuenta">
+                        <div class="mb-3">
+                            <label>Número de Cuenta:</label>
+                            <InputText class="form-control" @bind-Value="nuevaCuenta.Numero" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Fecha Apertura:</label>
+                            <InputDate class="form-control" @bind-Value="nuevaCuenta.FechaApertura" />
+                        </div>
+                        <div class="mb-3">
+                            <label>ID Tipo Cuenta:</label>
+                            <InputNumber class="form-control" @bind-Value="nuevaCuenta.IdTipoCuenta" />
+                        </div>
+                        <div class="mb-3">
+                            <label>ID Sucursal:</label>
+                            <InputNumber class="form-control" @bind-Value="nuevaCuenta.IdSucursal" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Saldo Inicial:</label>
+                            <InputNumber class="form-control" @bind-Value="nuevaCuenta.Saldo" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Sobregiro:</label>
+                            <InputNumber class="form-control" @bind-Value="nuevaCuenta.Sobregiro" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Confirmar Eliminación -->
+@if (mostrarConfirmEliminar && cuentaAEliminarId.HasValue)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CancelarEliminar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea eliminar la cuenta #<strong>@cuentaAEliminarId</strong>?</p>
+                    <p class="text-muted">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelarEliminar">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="ConfirmarEliminar">Eliminar definitivamente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private List<Cuenta>? cuentas;
+    private CuentaCreate nuevaCuenta = new() { FechaApertura = DateTime.Now };
+    
+    private bool mostrarFormulario = false;
+    private int? editingId = null;
+    
+    private bool mostrarConfirmEliminar = false;
+    private int? cuentaAEliminarId;
+
     private string? mensaje;
     private bool esError;
 
@@ -91,35 +175,102 @@ else
         cuentas = await CuentaService.GetCuentasAsync();
     }
 
-    private void VerDetalle(int idCuenta)
+    private void MostrarFormularioCrear()
     {
-        // Navegar a página de detalle (implementar después)
-        mensaje = $"Detalle de cuenta {idCuenta}";
-        esError = false;
+        mostrarFormulario = true;
+        editingId = null;
+        nuevaCuenta = new() { FechaApertura = DateTime.Now };
+        mensaje = null;
     }
 
-    private async Task EliminarCuenta(int idCuenta)
+    private void EditarCuenta(Cuenta cuenta)
     {
-        if (confirm($"¿Está seguro de eliminar la cuenta {idCuenta}?"))
+        editingId = cuenta.IdCuenta;
+        nuevaCuenta = new CuentaCreate
         {
-            var exito = await CuentaService.DeleteCuentaAsync(idCuenta);
-            if (exito)
+            Numero = cuenta.Numero,
+            FechaApertura = cuenta.FechaApertura,
+            IdTipoCuenta = cuenta.IdTipoCuenta,
+            IdSucursal = cuenta.IdSucursal ?? 0,
+            Saldo = cuenta.Saldo,
+            Sobregiro = cuenta.Sobregiro
+        };
+        mostrarFormulario = true;
+        mensaje = null;
+    }
+
+    private void CancelarFormulario()
+    {
+        mostrarFormulario = false;
+        editingId = null;
+        nuevaCuenta = new() { FechaApertura = DateTime.Now };
+    }
+
+    private async Task GuardarCuenta()
+    {
+        if (editingId.HasValue)
+        {
+            var actualizado = await CuentaService.UpdateCuentaAsync(editingId.Value, nuevaCuenta);
+            if (actualizado != null)
             {
-                mensaje = "Cuenta eliminada exitosamente";
+                mensaje = "Cuenta actualizada exitosamente";
                 esError = false;
+                mostrarFormulario = false;
                 await CargarCuentas();
             }
             else
             {
-                mensaje = "Error al eliminar la cuenta";
+                mensaje = "Error al actualizar la cuenta";
+                esError = true;
+            }
+        }
+        else
+        {
+            var creado = await CuentaService.CreateCuentaAsync(nuevaCuenta);
+            if (creado != null)
+            {
+                mensaje = "Cuenta creada exitosamente";
+                esError = false;
+                mostrarFormulario = false;
+                await CargarCuentas();
+            }
+            else
+            {
+                mensaje = "Error al crear la cuenta";
                 esError = true;
             }
         }
     }
 
-    private bool confirm(string message)
+    private void SolicitarEliminar(int id)
     {
-        // En producción, usar un modal de confirmación
-        return true;
+        cuentaAEliminarId = id;
+        mostrarConfirmEliminar = true;
+        mensaje = null;
+    }
+
+    private void CancelarEliminar()
+    {
+        mostrarConfirmEliminar = false;
+        cuentaAEliminarId = null;
+    }
+
+    private async Task ConfirmarEliminar()
+    {
+        if (!cuentaAEliminarId.HasValue) return;
+
+        var exito = await CuentaService.DeleteCuentaAsync(cuentaAEliminarId.Value);
+        if (exito)
+        {
+            mensaje = "Cuenta eliminada exitosamente";
+            esError = false;
+            await CargarCuentas();
+        }
+        else
+        {
+            mensaje = "Error al eliminar la cuenta";
+            esError = true;
+        }
+        CancelarEliminar();
     }
 }

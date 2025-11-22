@@ -4,99 +4,18 @@
 
 <PageTitle>Movimientos Bancarios</PageTitle>
 
-<h1> Movimientos Bancarios</h1>
+<h1>Movimientos Bancarios</h1>
 
-<div class="row">
-    <div class="col-md-4">
-        <div class="card mb-3">
-            <div class="card-header bg-success text-white">
-                <h5> Depósito</h5>
-            </div>
-            <div class="card-body">
-                <EditForm Model="@deposito" OnValidSubmit="RealizarDeposito">
-                    <div class="mb-3">
-                        <label>Cuenta:</label>
-                        <InputNumber class="form-control" @bind-Value="deposito.IdCuenta" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Sucursal:</label>
-                        <InputNumber class="form-control" @bind-Value="deposito.IdSucursal" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Valor:</label>
-                        <InputNumber class="form-control" @bind-Value="deposito.Valor" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Descripción:</label>
-                        <InputText class="form-control" @bind-Value="deposito.Descripcion" />
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">Realizar Depósito</button>
-                </EditForm>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card mb-3">
-            <div class="card-header bg-danger text-white">
-                <h5> Retiro</h5>
-            </div>
-            <div class="card-body">
-                <EditForm Model="@retiro" OnValidSubmit="RealizarRetiro">
-                    <div class="mb-3">
-                        <label>Cuenta:</label>
-                        <InputNumber class="form-control" @bind-Value="retiro.IdCuenta" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Sucursal:</label>
-                        <InputNumber class="form-control" @bind-Value="retiro.IdSucursal" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Valor:</label>
-                        <InputNumber class="form-control" @bind-Value="retiro.Valor" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Descripción:</label>
-                        <InputText class="form-control" @bind-Value="retiro.Descripcion" />
-                    </div>
-                    <button type="submit" class="btn btn-danger w-100">Realizar Retiro</button>
-                </EditForm>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card mb-3">
-            <div class="card-header bg-primary text-white">
-                <h5> Transferencia</h5>
-            </div>
-            <div class="card-body">
-                <EditForm Model="@transferencia" OnValidSubmit="RealizarTransferencia">
-                    <div class="mb-3">
-                        <label>Cuenta Origen:</label>
-                        <InputNumber class="form-control" @bind-Value="transferencia.IdCuentaOrigen" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Cuenta Destino:</label>
-                        <InputNumber class="form-control" @bind-Value="transferencia.IdCuentaDestino" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Sucursal:</label>
-                        <InputNumber class="form-control" @bind-Value="transferencia.IdSucursal" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Valor:</label>
-                        <InputNumber class="form-control" @bind-Value="transferencia.Valor" />
-                    </div>
-                    <div class="mb-3">
-                        <label>Descripción:</label>
-                        <InputText class="form-control" @bind-Value="transferencia.Descripcion" />
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Realizar Transferencia</button>
-                </EditForm>
-            </div>
-        </div>
-    </div>
+<div class="mb-3">
+    <button class="btn btn-success me-2" @onclick="MostrarDeposito">
+        <i class="bi bi-arrow-down-circle"></i> Depósito
+    </button>
+    <button class="btn btn-danger me-2" @onclick="MostrarRetiro">
+        <i class="bi bi-arrow-up-circle"></i> Retiro
+    </button>
+    <button class="btn btn-primary" @onclick="MostrarTransferencia">
+        <i class="bi bi-arrow-left-right"></i> Transferencia
+    </button>
 </div>
 
 @if (mensaje != null)
@@ -151,12 +70,137 @@
     </tbody>
 </table>
 
+<!-- Modal Depósito -->
+@if (mostrarDeposito)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Realizar Depósito</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CerrarModales"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@deposito" OnValidSubmit="RealizarDeposito">
+                        <div class="mb-3">
+                            <label>Cuenta:</label>
+                            <InputNumber class="form-control" @bind-Value="deposito.IdCuenta" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Sucursal:</label>
+                            <InputNumber class="form-control" @bind-Value="deposito.IdSucursal" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Valor:</label>
+                            <InputNumber class="form-control" @bind-Value="deposito.Valor" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Descripción:</label>
+                            <InputText class="form-control" @bind-Value="deposito.Descripcion" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CerrarModales">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Realizar Depósito</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Retiro -->
+@if (mostrarRetiro)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Realizar Retiro</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CerrarModales"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@retiro" OnValidSubmit="RealizarRetiro">
+                        <div class="mb-3">
+                            <label>Cuenta:</label>
+                            <InputNumber class="form-control" @bind-Value="retiro.IdCuenta" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Sucursal:</label>
+                            <InputNumber class="form-control" @bind-Value="retiro.IdSucursal" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Valor:</label>
+                            <InputNumber class="form-control" @bind-Value="retiro.Valor" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Descripción:</label>
+                            <InputText class="form-control" @bind-Value="retiro.Descripcion" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CerrarModales">Cancelar</button>
+                            <button type="submit" class="btn btn-danger">Realizar Retiro</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Transferencia -->
+@if (mostrarTransferencia)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Realizar Transferencia</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CerrarModales"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@transferencia" OnValidSubmit="RealizarTransferencia">
+                        <div class="mb-3">
+                            <label>Cuenta Origen:</label>
+                            <InputNumber class="form-control" @bind-Value="transferencia.IdCuentaOrigen" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Cuenta Destino:</label>
+                            <InputNumber class="form-control" @bind-Value="transferencia.IdCuentaDestino" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Sucursal:</label>
+                            <InputNumber class="form-control" @bind-Value="transferencia.IdSucursal" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Valor:</label>
+                            <InputNumber class="form-control" @bind-Value="transferencia.Valor" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Descripción:</label>
+                            <InputText class="form-control" @bind-Value="transferencia.Descripcion" />
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CerrarModales">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Realizar Transferencia</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private DepositoCreate deposito = new();
     private RetiroCreate retiro = new();
     private TransferenciaCreate transferencia = new();
     private string? mensaje;
     private bool esError;
+
+    private bool mostrarDeposito = false;
+    private bool mostrarRetiro = false;
+    private bool mostrarTransferencia = false;
 
     private List<Movimiento>? movimientos;
 
@@ -178,6 +222,37 @@
         }
     }
 
+    private void MostrarDeposito()
+    {
+        CerrarModales();
+        deposito = new();
+        mostrarDeposito = true;
+        mensaje = null;
+    }
+
+    private void MostrarRetiro()
+    {
+        CerrarModales();
+        retiro = new();
+        mostrarRetiro = true;
+        mensaje = null;
+    }
+
+    private void MostrarTransferencia()
+    {
+        CerrarModales();
+        transferencia = new();
+        mostrarTransferencia = true;
+        mensaje = null;
+    }
+
+    private void CerrarModales()
+    {
+        mostrarDeposito = false;
+        mostrarRetiro = false;
+        mostrarTransferencia = false;
+    }
+
     private async Task RealizarDeposito()
     {
         try
@@ -187,7 +262,7 @@
             {
                 mensaje = $"Depósito realizado exitosamente. Movimiento ID: {resultado.IdMovimiento}";
                 esError = false;
-                deposito = new(); // Limpiar formulario
+                CerrarModales();
                 await CargarMovimientos();
             }
             else
@@ -212,7 +287,7 @@
             {
                 mensaje = $"Retiro realizado exitosamente. Movimiento ID: {resultado.IdMovimiento}";
                 esError = false;
-                retiro = new();
+                CerrarModales();
                 await CargarMovimientos();
             }
             else
@@ -237,7 +312,7 @@
             {
                 mensaje = "Transferencia realizada exitosamente";
                 esError = false;
-                transferencia = new();
+                CerrarModales();
                 await CargarMovimientos();
             }
             else

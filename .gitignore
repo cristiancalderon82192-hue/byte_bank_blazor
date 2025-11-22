@@ -193,3 +193,4 @@ obj/Debug/net9.0/*
 
 # scripts output
 scripts/test_cors.ps1
+build_error.log

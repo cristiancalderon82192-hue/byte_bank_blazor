@@ -1,3 +1,4 @@
+```
 @page "/sucursales"
 @using ByteBank.Models
 @using ByteBank.Services
@@ -13,73 +14,6 @@
         <span class="bi bi-plus-circle"></span> Nueva Sucursal
     </button>
 </div>
-
-@if (mostrarFormulario)
-{
-    <div class="card mb-3">
-        <div class="card-header">
-            <h5>Nueva Sucursal</h5>
-        </div>
-        <div class="card-body">
-                <EditForm Model="@nuevaSucursal" OnValidSubmit="CrearSucursal">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Nombre de la Sucursal:</label>
-                        <InputText class="form-control" @bind-Value="nuevaSucursal.Nombre" />
-                            <ValidationMessage For="@(() => nuevaSucursal.Nombre)" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Ciudad:</label>
-                        <InputSelect class="form-select" @bind-Value="nuevaSucursal.IdCiudad">
-                            <option value="0">Seleccionar...</option>
-                            @if (ciudades != null)
-                            {
-                                @foreach (var ciudad in ciudades)
-                                {
-                                    <option value="@ciudad.IdCiudad">@ciudad.Nombre</option>
-                                }
-                            }
-                        </InputSelect>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Tipo de Sucursal:</label>
-                        <InputSelect class="form-select" @bind-Value="nuevaSucursal.IdTipoSucursal">
-                            <option value="0">Seleccionar...</option>
-                            @if (tiposSucursal != null)
-                            {
-                                @foreach (var tipo in tiposSucursal)
-                                {
-                                    <option value="@tipo.IdTipoSucursal">@tipo.Nombre</option>
-                                }
-                            }
-                        </InputSelect>
-                        <ValidationMessage For="@(() => nuevaSucursal.IdTipoSucursal)" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Dirección:</label>
-                        <InputText class="form-control" @bind-Value="nuevaSucursal.Direccion" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Teléfono:</label>
-                        <InputText class="form-control" @bind-Value="nuevaSucursal.Telefono" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Horario:</label>
-                        <InputText class="form-control" @bind-Value="nuevaSucursal.Horario" placeholder="Ej: Lun-Vie 8:00-17:00" />
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">Guardar</button>
-                    <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
-                </div>
-            </EditForm>
-        </div>
-    </div>
-}
 
 @if (sucursales == null)
 {
@@ -101,84 +35,21 @@ else
         @foreach (var sucursal in sucursales)
         {
             <div class="col-md-6 mb-3">
-                <div class="card">
+                <div class="card h-100">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">@sucursal.Nombre</h5>
                         <div>
                             <button class="btn btn-sm btn-primary me-1" @onclick="() => MostrarFormularioEditar(sucursal)">Editar</button>
-                            <button class="btn btn-sm btn-danger" @onclick="() => EliminarSucursal(sucursal.IdSucursal)">Eliminar</button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => SolicitarEliminar(sucursal)">Eliminar</button>
                         </div>
                     </div>
                     <div class="card-body">
-                        @if (editarSucursalId == sucursal.IdSucursal)
-                        {
-                            <EditForm Model="@editarSucursal" OnValidSubmit="() => GuardarEdicion(sucursal.IdSucursal)">
-                                <DataAnnotationsValidator />
-                                <ValidationSummary />
-                                <div class="row">
-                                    <div class="col-md-12 mb-2">
-                                        <label>Nombre:</label>
-                                        <InputText class="form-control" @bind-Value="editarSucursal.Nombre" />
-                                        <ValidationMessage For="@(() => editarSucursal.Nombre)" />
-                                    </div>
-                                    <div class="col-md-6 mb-2">
-                                        <label>Ciudad:</label>
-                                        <InputSelect class="form-select" @bind-Value="editarSucursal.IdCiudad">
-                                            <option value="0">Seleccionar...</option>
-                                            @if (ciudades != null)
-                                            {
-                                                @foreach (var ciudad in ciudades)
-                                                {
-                                                    <option value="@ciudad.IdCiudad">@ciudad.Nombre</option>
-                                                }
-                                            }
-                                        </InputSelect>
-                                        <ValidationMessage For="@(() => editarSucursal.IdCiudad)" />
-                                    </div>
-                                    <div class="col-md-6 mb-2">
-                                        <label>Tipo de Sucursal:</label>
-                                        <InputSelect class="form-select" @bind-Value="editarSucursal.IdTipoSucursal">
-                                            <option value="0">Seleccionar...</option>
-                                            @if (tiposSucursal != null)
-                                            {
-                                                @foreach (var tipo in tiposSucursal)
-                                                {
-                                                    <option value="@tipo.IdTipoSucursal">@tipo.Nombre</option>
-                                                }
-                                            }
-                                        </InputSelect>
-                                        <ValidationMessage For="@(() => editarSucursal.IdTipoSucursal)" />
-                                    </div>
-                                </div>
-                                <div class="row mt-2">
-                                    <div class="col-md-6 mb-2">
-                                        <label>Dirección:</label>
-                                        <InputText class="form-control" @bind-Value="editarSucursal.Direccion" />
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <label>Teléfono:</label>
-                                        <InputText class="form-control" @bind-Value="editarSucursal.Telefono" />
-                                    </div>
-                                    <div class="col-md-3 mb-2">
-                                        <label>Horario:</label>
-                                        <InputText class="form-control" @bind-Value="editarSucursal.Horario" />
-                                    </div>
-                                </div>
-                                <div class="d-flex gap-2 mt-3">
-                                    <button type="submit" class="btn btn-success btn-sm">Guardar</button>
-                                    <button type="button" class="btn btn-secondary btn-sm" @onclick="CancelarEdicion">Cancelar</button>
-                                </div>
-                            </EditForm>
-                        }
-                        else
-                        {
-                            <p class="mb-2"><strong>ID:</strong> @sucursal.IdSucursal</p>
-                            <p class="mb-2"><strong>Ciudad:</strong> @(ciudades?.FirstOrDefault(c => c.IdCiudad == sucursal.IdCiudad)?.Nombre ?? "—")</p>
-                            <p class="mb-2"><strong>Dirección:</strong> @sucursal.Direccion</p>
-                            <p class="mb-2"><strong>Teléfono:</strong> @sucursal.Telefono</p>
-                            <p class="mb-2"><strong>Horario:</strong> @sucursal.Horario</p>
-                            <p class="mb-2"><strong>Tipo:</strong> @(tiposSucursal?.FirstOrDefault(t => t.IdTipoSucursal == sucursal.IdTipoSucursal)?.Nombre ?? "—")</p>
-                        }
+                        <p class="mb-2"><strong>ID:</strong> @sucursal.IdSucursal</p>
+                        <p class="mb-2"><strong>Ciudad:</strong> @(ciudades?.FirstOrDefault(c => c.IdCiudad == sucursal.IdCiudad)?.Nombre ?? "—")</p>
+                        <p class="mb-2"><strong>Dirección:</strong> @sucursal.Direccion</p>
+                        <p class="mb-2"><strong>Teléfono:</strong> @sucursal.Telefono</p>
+                        <p class="mb-2"><strong>Horario:</strong> @sucursal.Horario</p>
+                        <p class="mb-2"><strong>Tipo:</strong> @(tiposSucursal?.FirstOrDefault(t => t.IdTipoSucursal == sucursal.IdTipoSucursal)?.Nombre ?? "—")</p>
                     </div>
                 </div>
             </div>
@@ -188,9 +59,103 @@ else
 
 @if (mensaje != null)
 {
-    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show mt-3" role="alert">
         @mensaje
         <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
+    </div>
+}
+
+<!-- Modal Crear/Editar -->
+@if (mostrarFormulario)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(editingId.HasValue ? "Editar Sucursal" : "Nueva Sucursal")</h5>
+                    <button type="button" class="btn-close" @onclick="CancelarFormulario"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@sucursalModel" OnValidSubmit="GuardarSucursal">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Nombre de la Sucursal:</label>
+                                <InputText class="form-control" @bind-Value="sucursalModel.Nombre" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Ciudad:</label>
+                                <InputSelect class="form-select" @bind-Value="sucursalModel.IdCiudad">
+                                    <option value="0">Seleccionar...</option>
+                                    @if (ciudades != null)
+                                    {
+                                        @foreach (var ciudad in ciudades)
+                                        {
+                                            <option value="@ciudad.IdCiudad">@ciudad.Nombre</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Tipo de Sucursal:</label>
+                                <InputSelect class="form-select" @bind-Value="sucursalModel.IdTipoSucursal">
+                                    <option value="0">Seleccionar...</option>
+                                    @if (tiposSucursal != null)
+                                    {
+                                        @foreach (var tipo in tiposSucursal)
+                                        {
+                                            <option value="@tipo.IdTipoSucursal">@tipo.Nombre</option>
+                                        }
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Dirección:</label>
+                                <InputText class="form-control" @bind-Value="sucursalModel.Direccion" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Teléfono:</label>
+                                <InputText class="form-control" @bind-Value="sucursalModel.Telefono" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Horario:</label>
+                                <InputText class="form-control" @bind-Value="sucursalModel.Horario" placeholder="Ej: Lun-Vie 8:00-17:00" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Confirmar Eliminación -->
+@if (mostrarConfirmEliminar && sucursalAEliminarId.HasValue)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CancelarEliminar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea eliminar la sucursal <strong>@sucursalAEliminarNombre</strong>?</p>
+                    <p class="text-muted">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelarEliminar">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="ConfirmarEliminar">Eliminar definitivamente</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -198,12 +163,18 @@ else
     private List<Sucursal>? sucursales;
     private List<Ciudad>? ciudades;
     private List<TipoSucursal>? tiposSucursal;
-    private SucursalCreate nuevaSucursal = new();
+    
+    private SucursalCreate sucursalModel = new();
+    
     private bool mostrarFormulario = false;
+    private int? editingId;
+    
+    private bool mostrarConfirmEliminar = false;
+    private int? sucursalAEliminarId;
+    private string? sucursalAEliminarNombre;
+
     private string? mensaje;
     private bool esError;
-    private int? editarSucursalId;
-    private SucursalCreate editarSucursal = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -220,13 +191,16 @@ else
     private void MostrarFormularioCrear()
     {
         mostrarFormulario = true;
-        nuevaSucursal = new();
+        editingId = null;
+        sucursalModel = new();
+        mensaje = null;
     }
 
     private void MostrarFormularioEditar(Sucursal s)
     {
-        editarSucursalId = s.IdSucursal;
-        editarSucursal = new SucursalCreate
+        editingId = s.IdSucursal;
+        mostrarFormulario = true;
+        sucursalModel = new SucursalCreate
         {
             Nombre = s.Nombre,
             IdCiudad = s.IdCiudad,
@@ -235,40 +209,72 @@ else
             Telefono = s.Telefono,
             Horario = s.Horario
         };
-    }
-
-    private void CancelarEdicion()
-    {
-        editarSucursalId = null;
-        editarSucursal = new();
+        mensaje = null;
     }
 
     private void CancelarFormulario()
     {
         mostrarFormulario = false;
-        nuevaSucursal = new();
+        editingId = null;
+        sucursalModel = new();
     }
 
-    private async Task CrearSucursal()
+    private async Task GuardarSucursal()
     {
-        var resultado = await SucursalService.CreateSucursalAsync(nuevaSucursal);
-        if (resultado != null)
+        if (editingId.HasValue)
         {
-            mensaje = "Sucursal creada exitosamente";
-            esError = false;
-            mostrarFormulario = false;
-            await CargarDatos();
+            var resultado = await SucursalService.UpdateSucursalAsync(editingId.Value, sucursalModel);
+            if (resultado != null)
+            {
+                mensaje = "Sucursal actualizada exitosamente";
+                esError = false;
+                CancelarFormulario();
+                await CargarDatos();
+            }
+            else
+            {
+                mensaje = SucursalService.LastError ?? "Error al actualizar la sucursal";
+                esError = true;
+            }
         }
         else
         {
-            mensaje = SucursalService.LastError ?? "Error al crear la sucursal";
-            esError = true;
+            var resultado = await SucursalService.CreateSucursalAsync(sucursalModel);
+            if (resultado != null)
+            {
+                mensaje = "Sucursal creada exitosamente";
+                esError = false;
+                CancelarFormulario();
+                await CargarDatos();
+            }
+            else
+            {
+                mensaje = SucursalService.LastError ?? "Error al crear la sucursal";
+                esError = true;
+            }
         }
     }
 
-    private async Task EliminarSucursal(int id)
+    private void SolicitarEliminar(Sucursal s)
     {
-        var exito = await SucursalService.DeleteSucursalAsync(id);
+        sucursalAEliminarId = s.IdSucursal;
+        sucursalAEliminarNombre = s.Nombre;
+        mostrarConfirmEliminar = true;
+        mensaje = null;
+    }
+
+    private void CancelarEliminar()
+    {
+        mostrarConfirmEliminar = false;
+        sucursalAEliminarId = null;
+        sucursalAEliminarNombre = null;
+    }
+
+    private async Task ConfirmarEliminar()
+    {
+        if (!sucursalAEliminarId.HasValue) return;
+
+        var exito = await SucursalService.DeleteSucursalAsync(sucursalAEliminarId.Value);
         if (exito)
         {
             mensaje = "Sucursal eliminada exitosamente";
@@ -280,23 +286,7 @@ else
             mensaje = SucursalService.LastError ?? "Error al eliminar la sucursal";
             esError = true;
         }
-    }
-
-    private async Task GuardarEdicion(int id)
-    {
-        var resultado = await SucursalService.UpdateSucursalAsync(id, editarSucursal);
-        if (resultado != null)
-        {
-            mensaje = "Sucursal actualizada exitosamente";
-            esError = false;
-            editarSucursalId = null;
-            editarSucursal = new();
-            await CargarDatos();
-        }
-        else
-        {
-            mensaje = SucursalService.LastError ?? "Error al actualizar la sucursal";
-            esError = true;
-        }
+        CancelarEliminar();
     }
 }
+```

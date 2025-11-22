@@ -19,100 +19,6 @@
     </div>
 </div>
 
-@if (mostrarCalculadora)
-{
-    <div class="card mb-3">
-        <div class="card-header bg-info text-white">
-            <h5>Calculadora de Cuotas</h5>
-        </div>
-        <div class="card-body">
-            <EditForm Model="@calculo" OnValidSubmit="CalcularCuota">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label>Valor del Préstamo:</label>
-                        <InputNumber class="form-control" @bind-Value="calculo.Valor" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Tasa de Interés (%):</label>
-                        <InputNumber class="form-control" @bind-Value="calculo.Interes" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Plazo (meses):</label>
-                        <InputNumber class="form-control" @bind-Value="calculo.Plazo" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Seguro (opcional):</label>
-                        <InputNumber class="form-control" @bind-Value="calculo.Seguro" />
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-info">Calcular</button>
-                <button type="button" class="btn btn-secondary ms-2" @onclick="() => mostrarCalculadora = false">Cerrar</button>
-            </EditForm>
-
-            @if (resultadoCalculo != null)
-            {
-                <div class="alert alert-success mt-3">
-                    <h6>Resultado del Cálculo:</h6>
-                    <ul class="mb-0">
-                        <li><strong>Cuota Mensual:</strong> $@resultadoCalculo.CuotaMensual.ToString("N2")</li>
-                        <li><strong>Total a Pagar:</strong> $@resultadoCalculo.TotalAPagar.ToString("N2")</li>
-                        <li><strong>Total Intereses:</strong> $@resultadoCalculo.TotalIntereses.ToString("N2")</li>
-                    </ul>
-                </div>
-            }
-        </div>
-    </div>
-}
-
-@if (mostrarFormulario)
-{
-    <div class="card mb-3">
-        <div class="card-header">
-            <h5>Nuevo Préstamo</h5>
-        </div>
-        <div class="card-body">
-            <EditForm Model="@nuevoPrestamo" OnValidSubmit="CrearPrestamo">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label>Número de Préstamo:</label>
-                        <InputText class="form-control" @bind-Value="nuevoPrestamo.Numero" />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label>ID Cuenta:</label>
-                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.IdCuenta" />
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label>Fecha:</label>
-                        <InputDate class="form-control" @bind-Value="nuevoPrestamo.Fecha" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label>Valor:</label>
-                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Valor" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Interés (%):</label>
-                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Interes" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Plazo (meses):</label>
-                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Plazo" />
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>Seguro:</label>
-                        <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Seguro" />
-                    </div>
-                </div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">Guardar</button>
-                    <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
-                </div>
-            </EditForm>
-        </div>
-    </div>
-}
-
 @if (prestamos == null)
 {
     <p><em>Cargando préstamos...</em></p>
@@ -159,7 +65,7 @@ else
                             <button class="btn btn-sm btn-primary me-1" @onclick="() => EditarPrestamo(prestamo)">
                                 Editar
                             </button>
-                            <button class="btn btn-sm btn-danger" @onclick="() => ConfirmEliminar(prestamo.IdPrestamo)">
+                            <button class="btn btn-sm btn-danger" @onclick="() => SolicitarEliminar(prestamo.IdPrestamo)">
                                 Eliminar
                             </button>
                     </td>
@@ -171,9 +77,140 @@ else
 
 @if (mensaje != null)
 {
-    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+    <div class="alert @(esError ? "alert-danger" : "alert-success") alert-dismissible fade show mt-3" role="alert">
         @mensaje
         <button type="button" class="btn-close" @onclick="() => mensaje = null"></button>
+    </div>
+}
+
+<!-- Modal Calculadora -->
+@if (mostrarCalculadora)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">Calculadora de Cuotas</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="() => mostrarCalculadora = false"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@calculo" OnValidSubmit="CalcularCuota">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>Valor del Préstamo:</label>
+                                <InputNumber class="form-control" @bind-Value="calculo.Valor" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Tasa de Interés (%):</label>
+                                <InputNumber class="form-control" @bind-Value="calculo.Interes" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Plazo (meses):</label>
+                                <InputNumber class="form-control" @bind-Value="calculo.Plazo" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Seguro (opcional):</label>
+                                <InputNumber class="form-control" @bind-Value="calculo.Seguro" />
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" @onclick="() => mostrarCalculadora = false">Cerrar</button>
+                            <button type="submit" class="btn btn-info">Calcular</button>
+                        </div>
+                    </EditForm>
+
+                    @if (resultadoCalculo != null)
+                    {
+                        <div class="alert alert-success mt-3">
+                            <h6>Resultado del Cálculo:</h6>
+                            <ul class="mb-0">
+                                <li><strong>Cuota Mensual:</strong> $@resultadoCalculo.CuotaMensual.ToString("N2")</li>
+                                <li><strong>Total a Pagar:</strong> $@resultadoCalculo.TotalAPagar.ToString("N2")</li>
+                                <li><strong>Total Intereses:</strong> $@resultadoCalculo.TotalIntereses.ToString("N2")</li>
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Crear/Editar -->
+@if (mostrarFormulario)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(editingId.HasValue ? "Editar Préstamo" : "Nuevo Préstamo")</h5>
+                    <button type="button" class="btn-close" @onclick="CancelarFormulario"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="@nuevoPrestamo" OnValidSubmit="CrearPrestamo">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label>Número de Préstamo:</label>
+                                <InputText class="form-control" @bind-Value="nuevoPrestamo.Numero" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>ID Cuenta:</label>
+                                <InputNumber class="form-control" @bind-Value="nuevoPrestamo.IdCuenta" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>Fecha:</label>
+                                <InputDate class="form-control" @bind-Value="nuevoPrestamo.Fecha" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label>Valor:</label>
+                                <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Valor" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Interés (%):</label>
+                                <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Interes" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Plazo (meses):</label>
+                                <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Plazo" />
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Seguro:</label>
+                                <InputNumber class="form-control" @bind-Value="nuevoPrestamo.Seguro" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal Confirmar Eliminación -->
+@if (mostrarConfirmEliminar && prestamoAEliminarId.HasValue)
+{
+    <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CancelarEliminar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea eliminar el préstamo #<strong>@prestamoAEliminarId</strong>?</p>
+                    <p class="text-muted">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelarEliminar">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="ConfirmarEliminar">Eliminar definitivamente</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -182,11 +219,16 @@ else
     private PrestamoCreate nuevoPrestamo = new() { Fecha = DateTime.Now };
     private CalculoCuota calculo = new();
     private CalculoCuotaResponse? resultadoCalculo;
+    
     private bool mostrarFormulario = false;
     private bool mostrarCalculadora = false;
+    private int? editingId = null;
+    
+    private bool mostrarConfirmEliminar = false;
+    private int? prestamoAEliminarId;
+
     private string? mensaje;
     private bool esError;
-    private int? editingId = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -220,6 +262,7 @@ else
         var next = maxNum + 1;
         // Formato total 8 caracteres: 'PR' + 6 dígitos
         nuevoPrestamo = new() { Fecha = DateTime.Now, Numero = $"PR{next.ToString("D6")}" };
+        mensaje = null;
     }
 
     private void MostrarCalculadora()
@@ -227,6 +270,7 @@ else
         mostrarCalculadora = true;
         calculo = new();
         resultadoCalculo = null;
+        mensaje = null;
     }
 
     private void CancelarFormulario()
@@ -250,7 +294,7 @@ else
         resultadoCalculo = resp;
     }
 
-    private Task EditarPrestamo(Prestamo prestamo)
+    private void EditarPrestamo(Prestamo prestamo)
     {
         editingId = prestamo.IdPrestamo;
         // mapear a PrestamoCreate
@@ -266,7 +310,7 @@ else
             Cuota = prestamo.Cuota
         };
         mostrarFormulario = true;
-        return Task.CompletedTask;
+        mensaje = null;
     }
 
     private async Task CrearPrestamo()
@@ -325,9 +369,24 @@ else
         await CargarPrestamos();
     }
 
-    private async Task EliminarPrestamo(int id)
+    private void SolicitarEliminar(int id)
     {
-        var exito = await PrestamoService.DeletePrestamoAsync(id);
+        prestamoAEliminarId = id;
+        mostrarConfirmEliminar = true;
+        mensaje = null;
+    }
+
+    private void CancelarEliminar()
+    {
+        mostrarConfirmEliminar = false;
+        prestamoAEliminarId = null;
+    }
+
+    private async Task ConfirmarEliminar()
+    {
+        if (!prestamoAEliminarId.HasValue) return;
+
+        var exito = await PrestamoService.DeletePrestamoAsync(prestamoAEliminarId.Value);
         if (exito)
         {
             mensaje = "Préstamo eliminado exitosamente";
@@ -339,23 +398,6 @@ else
             mensaje = "Error al eliminar el préstamo";
             esError = true;
         }
-    }
-
-    private async Task ConfirmEliminar(int id)
-    {
-        bool confirmado = false;
-        try
-        {
-            confirmado = await JS.InvokeAsync<bool>("confirm", $"¿Confirma eliminar el préstamo #{id}? Esta acción no se puede deshacer.");
-        }
-        catch
-        {
-            confirmado = false;
-        }
-
-        if (confirmado)
-        {
-            await EliminarPrestamo(id);
-        }
+        CancelarEliminar();
     }
 }
