@@ -1,6 +1,8 @@
-@page "/movimientos"
+﻿@page "/movimientos"
+@using ByteBank.Models
 @inject CuentaService CuentaService
 @inject MovimientoService MovimientoService
+@inject SucursalService SucursalService
 
 <PageTitle>Movimientos Bancarios</PageTitle>
 
@@ -84,11 +86,29 @@
                     <EditForm Model="@deposito" OnValidSubmit="RealizarDeposito">
                         <div class="mb-3">
                             <label>Cuenta:</label>
-                            <InputNumber class="form-control" @bind-Value="deposito.IdCuenta" />
+                            <InputSelect class="form-control" @bind-Value="deposito.IdCuenta">
+                                <option value="0">Seleccionar...</option>
+                                @if (cuentas != null)
+                                {
+                                    foreach (var cuenta in cuentas)
+                                    {
+                                        <option value="@cuenta.IdCuenta">@cuenta.Numero</option>
+                                    }
+                                }
+                            </InputSelect>
                         </div>
                         <div class="mb-3">
                             <label>Sucursal:</label>
-                            <InputNumber class="form-control" @bind-Value="deposito.IdSucursal" />
+                            <InputSelect class="form-control" @bind-Value="deposito.IdSucursal">
+                                <option value="0">Seleccionar...</option>
+                                @if (sucursales != null)
+                                {
+                                    foreach (var sucursal in sucursales)
+                                    {
+                                        <option value="@sucursal.IdSucursal">@sucursal.Nombre</option>
+                                    }
+                                }
+                            </InputSelect>
                         </div>
                         <div class="mb-3">
                             <label>Valor:</label>
@@ -123,11 +143,29 @@
                     <EditForm Model="@retiro" OnValidSubmit="RealizarRetiro">
                         <div class="mb-3">
                             <label>Cuenta:</label>
-                            <InputNumber class="form-control" @bind-Value="retiro.IdCuenta" />
+                            <InputSelect class="form-control" @bind-Value="retiro.IdCuenta">
+                                <option value="0">Seleccionar...</option>
+                                @if (cuentas != null)
+                                {
+                                    foreach (var cuenta in cuentas)
+                                    {
+                                        <option value="@cuenta.IdCuenta">@cuenta.Numero</option>
+                                    }
+                                }
+                            </InputSelect>
                         </div>
                         <div class="mb-3">
                             <label>Sucursal:</label>
-                            <InputNumber class="form-control" @bind-Value="retiro.IdSucursal" />
+                            <InputSelect class="form-control" @bind-Value="retiro.IdSucursal">
+                                <option value="0">Seleccionar...</option>
+                                @if (sucursales != null)
+                                {
+                                    foreach (var sucursal in sucursales)
+                                    {
+                                        <option value="@sucursal.IdSucursal">@sucursal.Nombre</option>
+                                    }
+                                }
+                            </InputSelect>
                         </div>
                         <div class="mb-3">
                             <label>Valor:</label>
@@ -162,15 +200,42 @@
                     <EditForm Model="@transferencia" OnValidSubmit="RealizarTransferencia">
                         <div class="mb-3">
                             <label>Cuenta Origen:</label>
-                            <InputNumber class="form-control" @bind-Value="transferencia.IdCuentaOrigen" />
+                            <InputSelect class="form-control" @bind-Value="transferencia.IdCuentaOrigen">
+                                <option value="0">Seleccionar...</option>
+                                @if (cuentas != null)
+                                {
+                                    foreach (var cuenta in cuentas)
+                                    {
+                                        <option value="@cuenta.IdCuenta">@cuenta.Numero</option>
+                                    }
+                                }
+                            </InputSelect>
                         </div>
                         <div class="mb-3">
                             <label>Cuenta Destino:</label>
-                            <InputNumber class="form-control" @bind-Value="transferencia.IdCuentaDestino" />
+                            <InputSelect class="form-control" @bind-Value="transferencia.IdCuentaDestino">
+                                <option value="0">Seleccionar...</option>
+                                @if (cuentas != null)
+                                {
+                                    foreach (var cuenta in cuentas)
+                                    {
+                                        <option value="@cuenta.IdCuenta">@cuenta.Numero</option>
+                                    }
+                                }
+                            </InputSelect>
                         </div>
                         <div class="mb-3">
                             <label>Sucursal:</label>
-                            <InputNumber class="form-control" @bind-Value="transferencia.IdSucursal" />
+                            <InputSelect class="form-control" @bind-Value="transferencia.IdSucursal">
+                                <option value="0">Seleccionar...</option>
+                                @if (sucursales != null)
+                                {
+                                    foreach (var sucursal in sucursales)
+                                    {
+                                        <option value="@sucursal.IdSucursal">@sucursal.Nombre</option>
+                                    }
+                                }
+                            </InputSelect>
                         </div>
                         <div class="mb-3">
                             <label>Valor:</label>
@@ -203,10 +268,26 @@
     private bool mostrarTransferencia = false;
 
     private List<Movimiento>? movimientos;
+    private List<Cuenta>? cuentas;
+    private List<Sucursal>? sucursales;
 
     protected override async Task OnInitializedAsync()
     {
+        await CargarDatos();
         await CargarMovimientos();
+    }
+
+    private async Task CargarDatos()
+    {
+        try
+        {
+            cuentas = await CuentaService.GetCuentasAsync();
+            sucursales = await SucursalService.GetSucursalesAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar datos: {ex}");
+        }
     }
 
     private async Task CargarMovimientos()
