@@ -2,6 +2,8 @@
 @using ByteBank.Models
 @using ByteBank.Services
 @inject CuentaService CuentaService
+@inject CatalogoService CatalogoService
+@inject SucursalService SucursalService
 
 <PageTitle>Cuentas Bancarias</PageTitle>
 
@@ -41,7 +43,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var cuenta in cuentas)
+            @foreach (var cuenta in cuentasPaginadas)
             {
                 <tr>
                     <td>@cuenta.IdCuenta</td>
@@ -72,6 +74,16 @@ else
             }
         </tbody>
     </table>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+            Mostrando cuentas de <strong>@((currentPage - 1) * itemsPerPage + 1)</strong> a <strong>@(Math.Min(currentPage * itemsPerPage, cuentas.Count))</strong> de <strong>@cuentas.Count</strong>
+        </div>
+        <div>
+            <button class="btn btn-secondary me-2" @onclick="PreviousPage" disabled="@(currentPage == 1)">Anterior</button>
+            <button class="btn btn-secondary" @onclick="NextPage" disabled="@(currentPage * itemsPerPage >= cuentas.Count)">Siguiente</button>
+        </div>
+    </div>
 }
 
 @if (mensaje != null)
@@ -94,29 +106,54 @@ else
                 </div>
                 <div class="modal-body">
                     <EditForm Model="@nuevaCuenta" OnValidSubmit="GuardarCuenta">
+                        <DataAnnotationsValidator />
                         <div class="mb-3">
                             <label>Número de Cuenta:</label>
                             <InputText class="form-control" @bind-Value="nuevaCuenta.Numero" />
+                            <ValidationMessage For="@(() => nuevaCuenta.Numero)" />
                         </div>
                         <div class="mb-3">
                             <label>Fecha Apertura:</label>
                             <InputDate class="form-control" @bind-Value="nuevaCuenta.FechaApertura" />
+                            <ValidationMessage For="@(() => nuevaCuenta.FechaApertura)" />
                         </div>
                         <div class="mb-3">
-                            <label>ID Tipo Cuenta:</label>
-                            <InputNumber class="form-control" @bind-Value="nuevaCuenta.IdTipoCuenta" />
+                            <label>Tipo de Cuenta:</label>
+                            <InputSelect class="form-select" @bind-Value="nuevaCuenta.IdTipoCuenta">
+                                <option value="0">Seleccionar...</option>
+                                @if (tiposCuenta != null)
+                                {
+                                    @foreach (var tipo in tiposCuenta)
+                                    {
+                                        <option value="@tipo.IdTipoCuenta">@tipo.Nombre</option>
+                                    }
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => nuevaCuenta.IdTipoCuenta)" />
                         </div>
                         <div class="mb-3">
-                            <label>ID Sucursal:</label>
-                            <InputNumber class="form-control" @bind-Value="nuevaCuenta.IdSucursal" />
+                            <label>Sucursal:</label>
+                            <InputSelect class="form-select" @bind-Value="nuevaCuenta.IdSucursal">
+                                <option value="0">Seleccionar...</option>
+                                @if (sucursales != null)
+                                {
+                                    @foreach (var sucursal in sucursales)
+                                    {
+                                        <option value="@sucursal.IdSucursal">@sucursal.Nombre</option>
+                                    }
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => nuevaCuenta.IdSucursal)" />
                         </div>
                         <div class="mb-3">
                             <label>Saldo Inicial:</label>
                             <InputNumber class="form-control" @bind-Value="nuevaCuenta.Saldo" />
+                            <ValidationMessage For="@(() => nuevaCuenta.Saldo)" />
                         </div>
                         <div class="mb-3">
                             <label>Sobregiro:</label>
                             <InputNumber class="form-control" @bind-Value="nuevaCuenta.Sobregiro" />
+                            <ValidationMessage For="@(() => nuevaCuenta.Sobregiro)" />
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @onclick="CancelarFormulario">Cancelar</button>
@@ -154,7 +191,9 @@ else
 
 @code {
     private List<Cuenta>? cuentas;
-    private CuentaCreate nuevaCuenta = new() { FechaApertura = DateTime.Now };
+    private List<TipoCuenta>? tiposCuenta;
+    private List<Sucursal>? sucursales;
+    private CuentaCreate nuevaCuenta = new() { FechaApertura = DateOnly.FromDateTime(DateTime.Now) };
     
     private bool mostrarFormulario = false;
     private int? editingId = null;
@@ -165,6 +204,11 @@ else
     private string? mensaje;
     private bool esError;
 
+    // Paginación
+    private int currentPage = 1;
+    private int itemsPerPage = 50;
+    private IEnumerable<Cuenta> cuentasPaginadas => cuentas?.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage) ?? Enumerable.Empty<Cuenta>();
+
     protected override async Task OnInitializedAsync()
     {
         await CargarCuentas();
@@ -173,14 +217,34 @@ else
     private async Task CargarCuentas()
     {
         cuentas = await CuentaService.GetCuentasAsync();
+        tiposCuenta = await CatalogoService.GetTiposCuentaAsync();
+        sucursales = await SucursalService.GetSucursalesAsync();
     }
 
     private void MostrarFormularioCrear()
     {
         mostrarFormulario = true;
         editingId = null;
-        nuevaCuenta = new() { FechaApertura = DateTime.Now };
+        nuevaCuenta = new() { FechaApertura = DateOnly.FromDateTime(DateTime.Now) };
+        GenerarProximoNumero();
         mensaje = null;
+    }
+
+    private void GenerarProximoNumero()
+    {
+        if (cuentas == null || !cuentas.Any())
+        {
+            nuevaCuenta.Numero = "CU000001";
+            return;
+        }
+
+        var maxNumero = cuentas
+            .Where(c => System.Text.RegularExpressions.Regex.IsMatch(c.Numero, "^CU\\d{6}$"))
+            .Select(c => int.Parse(c.Numero.Substring(2)))
+            .DefaultIfEmpty(0)
+            .Max();
+
+        nuevaCuenta.Numero = $"CU{(maxNumero + 1):D6}";
     }
 
     private void EditarCuenta(Cuenta cuenta)
@@ -203,7 +267,7 @@ else
     {
         mostrarFormulario = false;
         editingId = null;
-        nuevaCuenta = new() { FechaApertura = DateTime.Now };
+        nuevaCuenta = new() { FechaApertura = DateOnly.FromDateTime(DateTime.Now) };
     }
 
     private async Task GuardarCuenta()
@@ -272,5 +336,21 @@ else
             esError = true;
         }
         CancelarEliminar();
+    }
+
+    private void NextPage()
+    {
+        if (cuentas != null && currentPage * itemsPerPage < cuentas.Count)
+        {
+            currentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
     }
 }

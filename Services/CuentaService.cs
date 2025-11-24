@@ -18,7 +18,10 @@ namespace ByteBank.Services
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<Cuenta>>($"{ApiBasePath}/");
+                // Agregar parámetro limit para obtener todos los registros
+                // Si la API soporta limit=0 o limit=-1 para "sin límite", usar eso
+                // De lo contrario, usar un número muy grande
+                return await _httpClient.GetFromJsonAsync<List<Cuenta>>($"{ApiBasePath}/?limit=10000");
             }
             catch (Exception ex)
             {
