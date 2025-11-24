@@ -2,6 +2,8 @@
 @using ByteBank.Services
 @using ByteBank.Models
 @inject TitularService TitularService
+@inject CuentaService CuentaService
+@inject CuentahabienteService CuentahabienteService
 
 <PageTitle>Gestión de Titulares</PageTitle>
 
@@ -61,9 +63,18 @@
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label>ID de la Cuenta:</label>
+                    <label>Número de Cuenta:</label>
                     <div class="input-group">
-                        <input type="number" class="form-control" @bind="idCuentaConsultar" />
+                        <select class="form-select" @bind="idCuentaConsultar">
+                            <option value="0">-- Seleccione una Cuenta --</option>
+                            @if (allCuentas != null)
+                            {
+                                foreach (var cuenta in allCuentas)
+                                {
+                                    <option value="@cuenta.IdCuenta">@cuenta.Numero</option>
+                                }
+                            }
+                        </select>
                         <button class="btn btn-info" @onclick="ConsultarTitulares">
                             <span class="bi bi-search"></span> Consultar
                         </button>
@@ -109,9 +120,18 @@
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label>ID del Cuentahabiente:</label>
+                    <label>Documento del Titular:</label>
                     <div class="input-group">
-                        <input type="number" class="form-control" @bind="idCuentahabienteConsultar" />
+                        <select class="form-select" @bind="idCuentahabienteConsultar">
+                            <option value="0">-- Seleccione un Titular --</option>
+                            @if (allCuentahabientes != null)
+                            {
+                                foreach (var titular in allCuentahabientes)
+                                {
+                                    <option value="@titular.IdCuentahabiente">@titular.Documento - @titular.Nombre</option>
+                                }
+                            }
+                        </select>
                         <button class="btn btn-warning" @onclick="ConsultarCuentas">
                             <span class="bi bi-search"></span> Consultar
                         </button>
@@ -178,9 +198,18 @@
     
     private List<Cuentahabiente>? listaTitulares;
     private List<Cuenta>? listaCuentas;
+
+    private List<Cuenta>? allCuentas;
+    private List<Cuentahabiente>? allCuentahabientes;
     
     private string? mensaje;
     private bool esError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        allCuentas = await CuentaService.GetCuentasAsync();
+        allCuentahabientes = await CuentahabienteService.GetCuentahabientesAsync();
+    }
 
     private async Task AsociarTitular()
     {
@@ -218,19 +247,26 @@
 
     private async Task ConsultarTitulares()
     {
+        if (idCuentaConsultar == 0)
+        {
+            mensaje = "Por favor seleccione una cuenta.";
+            esError = true;
+            return;
+        }
+
         listaTitulares = await TitularService.GetTitularesByCuentaAsync(idCuentaConsultar);
         if (listaTitulares != null)
         {
             mensaje = null;
             if (!listaTitulares.Any())
             {
-                 mensaje = $"No se encontraron titulares para la cuenta {idCuentaConsultar}";
+                 mensaje = $"No se encontraron titulares para la cuenta seleccionada";
                  esError = true; // Or just warning
             }
         }
         else
         {
-            mensaje = $"Error al consultar titulares para la cuenta {idCuentaConsultar}";
+            mensaje = $"Error al consultar titulares para la cuenta seleccionada";
             esError = true;
             listaTitulares = null;
         }
@@ -238,19 +274,26 @@
 
     private async Task ConsultarCuentas()
     {
+        if (idCuentahabienteConsultar == 0)
+        {
+            mensaje = "Por favor seleccione un titular.";
+            esError = true;
+            return;
+        }
+
         listaCuentas = await TitularService.GetCuentasByCuentahabienteAsync(idCuentahabienteConsultar);
         if (listaCuentas != null)
         {
             mensaje = null;
             if (!listaCuentas.Any())
             {
-                 mensaje = $"No se encontraron cuentas para el cuentahabiente {idCuentahabienteConsultar}";
+                 mensaje = $"No se encontraron cuentas para el cuentahabiente seleccionado";
                  esError = true;
             }
         }
         else
         {
-            mensaje = $"Error al consultar cuentas para el cuentahabiente {idCuentahabienteConsultar}";
+            mensaje = $"Error al consultar cuentas para el cuentahabiente seleccionado";
             esError = true;
             listaCuentas = null;
         }
