@@ -3,6 +3,7 @@
 @inject CuentaService CuentaService
 @inject MovimientoService MovimientoService
 @inject SucursalService SucursalService
+@inject CatalogoService CatalogoService
 
 <PageTitle>Movimientos Bancarios</PageTitle>
 
@@ -18,6 +19,54 @@
     <button class="btn btn-primary" @onclick="MostrarTransferencia">
         <i class="bi bi-arrow-left-right"></i> Transferencia
     </button>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        Filtros de Búsqueda
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Fecha</label>
+                <InputDate class="form-control" @bind-Value="filtroFecha" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Sucursal</label>
+                <select class="form-select" @bind="filtroSucursal">
+                    <option value="0">Todas</option>
+                    @if (sucursales != null)
+                    {
+                        foreach (var suc in sucursales)
+                        {
+                            <option value="@suc.IdSucursal">@suc.Nombre</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Cuenta (Número)</label>
+                <InputText class="form-control" @bind-Value="filtroCuenta" placeholder="Número de cuenta..." />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Tipo Movimiento</label>
+                <select class="form-select" @bind="filtroTipo">
+                    <option value="0">Todos</option>
+                    @if (tiposMovimiento != null)
+                    {
+                        foreach (var tipo in tiposMovimiento)
+                        {
+                            <option value="@tipo.IdTipoMovimiento">@tipo.Nombre</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-12 text-end">
+                <button class="btn btn-secondary me-2" @onclick="LimpiarFiltros">Limpiar</button>
+                <button class="btn btn-primary" @onclick="FiltrarMovimientos">Filtrar</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @if (mensaje != null)
@@ -37,18 +86,18 @@
             <th>Sucursal</th>
             <th>Fecha</th>
             <th>Valor</th>
-            <th>Tipo</th>
+            <th>Tipo Movimiento</th>
             <th>Descripción</th>
         </tr>
     </thead>
     <tbody>
-        @if (movimientos == null)
+        @if (movimientosFiltrados == null)
         {
             <tr>
                 <td colspan="7">Cargando movimientos...</td>
             </tr>
         }
-        else if (!movimientos.Any())
+        else if (!movimientosFiltrados.Any())
         {
             <tr>
                 <td colspan="7">No hay movimientos registrados.</td>
@@ -56,15 +105,15 @@
         }
         else
         {
-            @foreach (var mov in movimientos)
+            @foreach (var mov in movimientosFiltrados)
             {
                 <tr>
                     <td>@mov.IdMovimiento</td>
-                    <td>@mov.IdCuenta</td>
-                    <td>@mov.IdSucursal</td>
+                    <td>@(cuentas?.FirstOrDefault(c => c.IdCuenta == mov.IdCuenta)?.Numero ?? mov.IdCuenta.ToString())</td>
+                    <td>@(mov.IdSucursal.HasValue ? sucursales?.FirstOrDefault(s => s.IdSucursal == mov.IdSucursal)?.Nombre ?? "No Aplica" : "No Aplica")</td>
                     <td>@mov.Fecha.ToString("yyyy-MM-dd")</td>
                     <td>@mov.Valor.ToString("F2")</td>
-                    <td>@mov.IdTipoMovimiento</td>
+                    <td>@(tiposMovimiento?.FirstOrDefault(t => t.IdTipoMovimiento == mov.IdTipoMovimiento)?.Nombre ?? mov.IdTipoMovimiento.ToString())</td>
                     <td>@mov.Descripcion</td>
                 </tr>
             }
@@ -268,8 +317,16 @@
     private bool mostrarTransferencia = false;
 
     private List<Movimiento>? movimientos;
+    private List<Movimiento>? movimientosFiltrados;
     private List<Cuenta>? cuentas;
     private List<Sucursal>? sucursales;
+    private List<TipoMovimiento>? tiposMovimiento;
+
+    // Campos para filtros
+    private DateTime? filtroFecha;
+    private int filtroSucursal = 0;
+    private string filtroCuenta = string.Empty;
+    private int filtroTipo = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -283,6 +340,7 @@
         {
             cuentas = await CuentaService.GetCuentasAsync();
             sucursales = await SucursalService.GetSucursalesAsync();
+            tiposMovimiento = await CatalogoService.GetTiposMovimientoAsync();
         }
         catch (Exception ex)
         {
@@ -295,12 +353,63 @@
         try
         {
             movimientos = await MovimientoService.GetMovimientosAsync();
-            StateHasChanged();
+            FiltrarMovimientos();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error detallado: {ex}");
         }
+    }
+
+    private void FiltrarMovimientos()
+    {
+        if (movimientos == null) return;
+
+        var query = movimientos.AsEnumerable();
+
+        if (filtroFecha.HasValue)
+        {
+            query = query.Where(m => m.Fecha.Date == filtroFecha.Value.Date);
+        }
+
+        if (filtroSucursal > 0)
+        {
+            query = query.Where(m => m.IdSucursal == filtroSucursal);
+        }
+
+        if (!string.IsNullOrWhiteSpace(filtroCuenta))
+        {
+            var cuentasIds = cuentas?
+                .Where(c => c.Numero.Contains(filtroCuenta, StringComparison.OrdinalIgnoreCase))
+                .Select(c => c.IdCuenta)
+                .ToList();
+
+            if (cuentasIds != null && cuentasIds.Any())
+            {
+                query = query.Where(m => cuentasIds.Contains(m.IdCuenta));
+            }
+            else
+            {
+                query = Enumerable.Empty<Movimiento>();
+            }
+        }
+
+        if (filtroTipo > 0)
+        {
+            query = query.Where(m => m.IdTipoMovimiento == filtroTipo);
+        }
+
+        movimientosFiltrados = query.ToList();
+        StateHasChanged();
+    }
+
+    private void LimpiarFiltros()
+    {
+        filtroFecha = null;
+        filtroSucursal = 0;
+        filtroCuenta = string.Empty;
+        filtroTipo = 0;
+        FiltrarMovimientos();
     }
 
     private void MostrarDeposito()
