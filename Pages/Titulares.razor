@@ -19,12 +19,30 @@
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label>ID de la Cuenta:</label>
-                    <input type="number" class="form-control" @bind="idCuentaAsociar" />
+                    <label>Numero de Cuenta:</label>
+                    <select class="form-select" @bind="idCuentaAsociar">
+                        <option value="0">-- Seleccione una Cuenta --</option>
+                        @if (allCuentas != null)
+                        {
+                            foreach (var cuenta in allCuentas)
+                            {
+                                <option value="@cuenta.IdCuenta">@cuenta.Numero</option>
+                            }
+                        }
+                    </select>
                 </div>
                 <div class="mb-3">
-                    <label>ID del Cuentahabiente:</label>
-                    <input type="number" class="form-control" @bind="idCuentahabienteAsociar" />
+                    <label>Documento del Cuentahabiente:</label>
+                    <select class="form-select" @bind="idCuentahabienteAsociar">
+                        <option value="0">-- Seleccione un Titular --</option>
+                        @if (allCuentahabientes != null)
+                        {
+                            foreach (var titular in allCuentahabientes)
+                            {
+                                <option value="@titular.IdCuentahabiente">@titular.Documento - @titular.Nombre</option>
+                            }
+                        }
+                    </select>
                 </div>
                 <button class="btn btn-success" @onclick="AsociarTitular">
                     <span class="bi bi-link-45deg"></span> Asociar
@@ -41,12 +59,30 @@
             </div>
             <div class="card-body">
                 <div class="mb-3">
-                    <label>ID de la Cuenta:</label>
-                    <input type="number" class="form-control" @bind="idCuentaRemover" />
+                    <label>Numero de Cuenta:</label>
+                    <select class="form-select" @bind="idCuentaRemover">
+                        <option value="0">-- Seleccione una Cuenta --</option>
+                        @if (allCuentas != null)
+                        {
+                            foreach (var cuenta in allCuentas)
+                            {
+                                <option value="@cuenta.IdCuenta">@cuenta.Numero</option>
+                            }
+                        }
+                    </select>
                 </div>
                 <div class="mb-3">
-                    <label>ID del Cuentahabiente:</label>
-                    <input type="number" class="form-control" @bind="idCuentahabienteRemover" />
+                    <label>Documento del Cuentahabiente:</label>
+                    <select class="form-select" @bind="idCuentahabienteRemover">
+                        <option value="0">-- Seleccione un Titular --</option>
+                        @if (allCuentahabientes != null)
+                        {
+                            foreach (var titular in allCuentahabientes)
+                            {
+                                <option value="@titular.IdCuentahabiente">@titular.Documento - @titular.Nombre</option>
+                            }
+                        }
+                    </select>
                 </div>
                 <button class="btn btn-danger" @onclick="RemoverTitular">
                     <span class="bi bi-x-circle"></span> Remover
