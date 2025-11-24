@@ -2157,10 +2157,10 @@ D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\byte_bank_blazor.dll
 D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\refint\byte_bank_blazor.dll
 D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\byte_bank_blazor.pdb
 D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\ref\byte_bank_blazor.dll
-D:\Projects\C-Sharp\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.vplh45du1v.wasm
-D:\Projects\C-Sharp\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.8udrp57n5k.pdb
-D:\Projects\C-Sharp\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.vplh45du1v.wasm.gz
-D:\Projects\C-Sharp\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.8udrp57n5k.pdb.gz
-D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\compressed\di3za72dx0-vplh45du1v.gz
-D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\compressed\5cnfe54xs6-8udrp57n5k.gz
-D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\compressed\qql09gx4wr-6le6rup6si.gz
+D:\Projects\C-Sharp\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.iefxbvhezh.wasm
+D:\Projects\C-Sharp\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.0px55aw3w1.pdb
+D:\Projects\C-Sharp\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.iefxbvhezh.wasm.gz
+D:\Projects\C-Sharp\byte_bank_blazor\bin\Debug\net9.0\wwwroot\_framework\byte_bank_blazor.0px55aw3w1.pdb.gz
+D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\compressed\di3za72dx0-iefxbvhezh.gz
+D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\compressed\5cnfe54xs6-0px55aw3w1.gz
+D:\Projects\C-Sharp\byte_bank_blazor\obj\Debug\net9.0\compressed\qql09gx4wr-621qrd2mng.gz
